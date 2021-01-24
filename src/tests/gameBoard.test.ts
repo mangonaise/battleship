@@ -9,7 +9,6 @@ const H = CellState.shipHit;
 const X = CellState.shipSunk;
 
 describe('Game board', () => {
-  
   beforeEach(() => board = createGameBoard());
   it('initializes empty board correctly', () => {
     
@@ -27,7 +26,7 @@ describe('Game board', () => {
     ]);
   });
 
-  it('can have a ship placed on it horizontally', () => {
+  it('can place a ship horizontally', () => {
     const placement: ShipPlacement = { ship: createShip(4), direction: 'horizontal', row: 3, column: 4 };
     board.prepareToPlaceShip(placement);
     board.placeShip();
@@ -45,7 +44,7 @@ describe('Game board', () => {
     ]);
   });
 
-  it('can have a ship placed on it vertically', () => {
+  it('can place a ship vertically', () => {
     const placement: ShipPlacement = { ship: createShip(3), direction: 'vertical', row: 7, column: 8 }
     board.prepareToPlaceShip(placement);
     board.placeShip();

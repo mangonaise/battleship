@@ -8,19 +8,18 @@ enum CellState {
 }
 
 type CellField = CellState[][];
-type Direction = 'horizontal' | 'vertical';
 
-type ShipPlacement = {
+export interface ShipPlacement {
   ship: Ship, 
-  direction: Direction, 
+  direction: 'horizontal' | 'vertical', 
   row: number, 
   column: number
-  isValid: boolean
 }
 
 const createGameBoard = () => {
   let cells: CellField = initializeBoard();
   let nextShipPlacement: ShipPlacement;
+  let isNextShipPlacementValid = false;
 
   function initializeBoard() {
     return (
@@ -30,39 +29,55 @@ const createGameBoard = () => {
     )
   }
 
-  function prepareToPlaceShip(ship: Ship, direction: Direction, row: number, column: number) {
+  function prepareToPlaceShip(shipPlacement: ShipPlacement) {
+    const { ship, direction, row, column } = shipPlacement;
+
     const startPoint = direction === 'horizontal' ? column : row;
     
-    const isShipWithinEdges = 
+    const isShipWithinBoardEdges = 
       row >= 0 
       && column >= 0 
       && startPoint + ship.size <= 10;
 
-    const isValid = isShipWithinEdges;
+    isNextShipPlacementValid = isShipWithinBoardEdges;
 
-    nextShipPlacement = { ship, direction, row, column, isValid };
+    nextShipPlacement = shipPlacement;
   }
 
-  function placeShip() {
-    const { ship, direction, row, column, isValid } = nextShipPlacement;
+  function getCellsInShip(shipPlacement: ShipPlacement) {
+    const { ship, direction, row, column } = shipPlacement;
 
-    if (!isValid) {
-      throw new Error("Can't place ship as proposed placement is invalid!")
-    }
+    let positions: [number, number][] = []
 
     for (let i = 0; i < ship.size; i++) {
       if (direction === 'horizontal') {
-        cells[row][column + i] = CellState.shipIntact;
+        positions.push([row, column + i]);
       } else if (direction === 'vertical') {
-        cells[row + i][column] = CellState.shipIntact;
+        positions.push([row + i, column]);
       }
     }
+
+    return positions;
+  }
+
+  function setStateOfCells(positions: [number, number][], newState: CellState) {
+    positions.forEach(pos => cells[pos[0]][pos[1]] = newState);
+  }
+
+  function placeShip() {
+    if (!isNextShipPlacementValid) {
+      throw new Error("Can't place ship as proposed placement is invalid.")
+    }
+
+    const cellPositions = getCellsInShip(nextShipPlacement)
+    setStateOfCells(cellPositions, CellState.shipIntact);
   }
 
   return {
     get cells() { return cells; },
     get prepareToPlaceShip() { return prepareToPlaceShip; },
     get nextShipPlacement() { return nextShipPlacement; },
+    get isNextShipPlacementValid() { return isNextShipPlacementValid; },
     get placeShip() { return placeShip; }
   }
 }

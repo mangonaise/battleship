@@ -33,15 +33,41 @@ const createGameBoard = () => {
     const { ship, direction, row, column } = shipPlacement;
 
     const startPoint = direction === 'horizontal' ? column : row;
-    
     const isShipWithinBoardEdges = 
       row >= 0 
       && column >= 0 
       && startPoint + ship.size <= 10;
 
-    isNextShipPlacementValid = isShipWithinBoardEdges;
-
+    isNextShipPlacementValid = isShipWithinBoardEdges && !wouldShipsBeInContact(shipPlacement);
     nextShipPlacement = shipPlacement;
+  }
+
+  function wouldShipsBeInContact(proposedPlacement: ShipPlacement) {
+    const proposedCells = getCellsInShip(proposedPlacement);
+
+    for (const cell of proposedCells) {
+      const surrounding = getSurroundingCellStates(cell).filter(state => state !== undefined);
+      const isContact = !surrounding.every(state => state === CellState.empty);
+      if (isContact) return true;
+    }
+
+    return false;
+  }
+
+  function getSurroundingCellStates(cell: [number, number]) {
+    const row = cell[0];
+    const column = cell[1];
+    const surroundingStates: (CellState | undefined)[] = [];
+
+    for (let checkedRow = row - 1; checkedRow <= row + 1; checkedRow++) {
+      for (let checkedColumn = column - 1; checkedColumn <= column + 1; checkedColumn++) {
+        const cellsInRow = cells[checkedColumn];
+        const targetCell = cellsInRow ? cellsInRow[checkedColumn] : undefined;
+        surroundingStates.push(targetCell);
+      }
+    }
+
+    return surroundingStates;
   }
 
   function getCellsInShip(shipPlacement: ShipPlacement) {
@@ -71,6 +97,7 @@ const createGameBoard = () => {
 
     const cellPositions = getCellsInShip(nextShipPlacement)
     setStateOfCells(cellPositions, CellState.shipIntact);
+    isNextShipPlacementValid = false;
   }
 
   return {
@@ -78,7 +105,7 @@ const createGameBoard = () => {
     get prepareToPlaceShip() { return prepareToPlaceShip; },
     get nextShipPlacement() { return nextShipPlacement; },
     get isNextShipPlacementValid() { return isNextShipPlacementValid; },
-    get placeShip() { return placeShip; }
+    get placeShip() { return placeShip; },
   }
 }
 

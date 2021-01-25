@@ -1,5 +1,5 @@
-import createPlayer from "../logic/player";
-import createShip from "../logic/ship";
+import Player from "../logic/player";
+import Ship from "../logic/ship";
 import { CellState } from '../logic/gameBoard';
 
 const o = CellState.empty;
@@ -10,20 +10,20 @@ const X = CellState.shipSunk;
 
 describe('Player', () => {
   test('new player has an empty board', () => {
-    const player = createPlayer();
+    const player = new Player();
     const rows = player.board.cells[0].length;
     const columns = player.board.cells.length;
     expect(rows * columns).toBe(100);
   });
 
   test(`player can attack opponent's board`, () => {
-    const player = createPlayer();
-    const opponent = createPlayer();
+    const player = new Player();
+    const opponent = new Player();
 
     player.setOpponent(opponent);
     opponent.setOpponent(player);
 
-    opponent.board.prepareToPlaceShip({ ship: createShip(3), direction: 'vertical', row: 5, column: 5 });
+    opponent.board.prepareToPlaceShip({ ship: new Ship(3), direction: 'vertical', row: 5, column: 5 });
     opponent.board.placeShip();
 
     player.attack([6, 5]);

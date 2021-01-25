@@ -1,52 +1,38 @@
-import { CellState } from "./gameBoard";
+import { makeAutoObservable } from "mobx";
 
 type HitState = 'intact' | 'hit';
 
-export interface Ship {
-  size: number,
-  hits: HitState[],
-  hit: (index: number) => void,
-  isSunk: boolean,
-  cellPositions: [number, number][],
-  originPosition: [number, number],
-  direction: 'horizontal' | 'vertical'
-}
+class Ship {
+  public size;
+  public hits: HitState[];
+  public isSunk = false;
+  public direction: 'horizontal' | 'vertical' = 'horizontal';
+  private _cellPositions: [number, number][] = [];
+  private _originPosition: [number, number] = [-1, -1];
 
-const createShip = (initSize: number) => {
-  let hits: HitState[] = initializeHits();
-  let isSunk = false;
-  let cellPositions: [number, number][] = [];
-  let originPosition: [number, number] = [-1, -1];
-  let direction: 'horizontal' | 'vertical' = 'horizontal';
-
-  function initializeHits() {
-    return Array.from({ length: initSize }).map(x => 'intact' as HitState);
+  constructor(initSize: number) {
+    this.size = initSize;
+    this.hits = this.initializeHits();
   }
 
-  function hit(index: number) {
-    hits[index] = 'hit';
-    isSunk = hits.every(state => state === 'hit');
-  }
-
-  function setCellPositions(newPositions: [number, number][]) {
-    cellPositions = newPositions;
-    originPosition = newPositions.reduce((origin, position) => {
+  public get cellPositions() { return this._cellPositions; }
+  public set cellPositions(newPositions: [number, number][]) {
+    this._cellPositions = newPositions;
+    this._originPosition = newPositions.reduce((origin, position) => {
       return [Math.min(origin[0], position[0]), Math.min(origin[1], position[1])];
     }, [10, 10]);
   }
 
-  let output: Ship = {
-    get size() { return initSize; },
-    get hits() { return hits; },
-    get hit() { return hit; },
-    get isSunk() { return isSunk; },
-    get cellPositions() { return cellPositions; },
-    set cellPositions(newPositions) { setCellPositions(newPositions); },
-    get originPosition() { return originPosition; },
-    direction
+  public get originPosition() { return this._originPosition; }
+
+  private initializeHits() {
+    return Array.from({ length: this.size }).map(x => 'intact' as HitState);
   }
 
-  return output;
+  public hit(index: number) {
+    this.hits[index] = 'hit';
+    this.isSunk = this.hits.every(state => state === 'hit');
+  }
 }
 
-export default createShip;
+export default Ship;

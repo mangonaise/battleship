@@ -1,7 +1,7 @@
-import { CellState, ShipPlacement, createGameBoard } from '../logic/gameBoard';
-import createShip, { Ship } from '../logic/ship';
+import { CellState, ShipPlacement, GameBoard } from '../logic/gameBoard';
+import Ship from '../logic/ship';
 
-let board = createGameBoard();
+let board = new GameBoard();
 const o = CellState.empty;
 const m = CellState.missed;
 const S = CellState.shipIntact;
@@ -9,7 +9,7 @@ const H = CellState.shipHit;
 const X = CellState.shipSunk;
 
 describe('Game board', () => {
-  beforeEach(() => board = createGameBoard());
+  beforeEach(() => board = new GameBoard());
   it('initializes empty board correctly', () => {
     
     expect(board.cells).toEqual([
@@ -27,7 +27,7 @@ describe('Game board', () => {
   });
 
   it('can place a ship horizontally', () => {
-    const ship = createShip(4);
+    const ship = new Ship(4);
     const placement: ShipPlacement = { ship, direction: 'horizontal', row: 3, column: 4 };
     board.prepareToPlaceShip(placement);
     board.placeShip();
@@ -50,8 +50,8 @@ describe('Game board', () => {
     expect(ship.isSunk).toBe(false);
   });
 
-  it('can place a ship vertically', () => {
-    const ship = createShip(3);
+  it.only('can place a ship vertically', () => {
+    const ship = new Ship(3);
     const placement: ShipPlacement = { ship, direction: 'vertical', row: 7, column: 8 }
     board.prepareToPlaceShip(placement);
     board.placeShip();
@@ -75,7 +75,7 @@ describe('Game board', () => {
   });
 
   it('can rotate a ship', () => {
-    const ship = createShip(3);
+    const ship = new Ship(3);
     const placement: ShipPlacement = { ship, direction: 'horizontal', row: 3, column: 4 };
     board.prepareToPlaceShip(placement);
     board.placeShip();
@@ -102,7 +102,7 @@ describe('Game board', () => {
   });
 
   it('will not allow rotating a ship if it would go outside of board edges', () => {
-    const ship = createShip(4);
+    const ship = new Ship(4);
     const placement: ShipPlacement = { ship, direction: 'vertical', row: 6, column: 7 };
     board.prepareToPlaceShip(placement);
     board.placeShip();
@@ -111,12 +111,12 @@ describe('Game board', () => {
   })
 
   it('will not allow rotating a ship if it would collide with another ship', () => {
-    const ship1 = createShip(1);
+    const ship1 = new Ship(1);
     const placement1: ShipPlacement = { ship: ship1, direction: 'vertical', row: 0, column: 3 };
     board.prepareToPlaceShip(placement1);
     board.placeShip();
 
-    const ship2 = createShip(4);
+    const ship2 = new Ship(4);
     const placement2: ShipPlacement = { ship: ship2, direction: 'vertical', row: 0, column: 0};
     board.prepareToPlaceShip(placement2);
     board.placeShip();
@@ -125,40 +125,40 @@ describe('Game board', () => {
   })
 
   it('will not allow a horizontal ship to be placed outside the board', () => {
-    const invalidPlacement1: ShipPlacement = { ship: createShip(4), direction: 'horizontal', row: 0, column: 7 };
+    const invalidPlacement1: ShipPlacement = { ship: new Ship(4), direction: 'horizontal', row: 0, column: 7 };
     board.prepareToPlaceShip(invalidPlacement1);
     expect(board.isNextShipPlacementValid).toBe(false);
 
-    const invalidPlacement2: ShipPlacement = { ship: createShip(1), direction: 'horizontal', row: 4, column: -1 };
+    const invalidPlacement2: ShipPlacement = { ship: new Ship(1), direction: 'horizontal', row: 4, column: -1 };
     board.prepareToPlaceShip(invalidPlacement2);
     expect(board.isNextShipPlacementValid).toBe(false);
   });
 
   it('will not allow a vertical ship to be placed outside the board', () => {
-    const placement: ShipPlacement = { ship: createShip(3), direction: 'vertical', row: 8, column: 4 };
+    const placement: ShipPlacement = { ship: new Ship(3), direction: 'vertical', row: 8, column: 4 };
     board.prepareToPlaceShip(placement);
     expect(board.isNextShipPlacementValid).toBe(false);
   });
 
   it('will not allow a ship to be placed in the same location twice', () => {
-    const ship1 = createShip(1);
+    const ship1 = new Ship(1);
     let placement: ShipPlacement = { ship: ship1, direction: 'vertical', row: 5, column: 5 };
     board.prepareToPlaceShip(placement);
     board.placeShip();
 
-    const ship2 = createShip(1);
+    const ship2 = new Ship(1);
     placement.ship = ship2;
     board.prepareToPlaceShip(placement);
     expect(board.isNextShipPlacementValid).toBe(false);
   });
 
   it('will not allow a ship to be placed if there is already a ship there', () => {
-    const ship1 = createShip(1);
+    const ship1 = new Ship(1);
     const placement1: ShipPlacement = { ship: ship1, direction: 'vertical', row: 0, column: 3 };
     board.prepareToPlaceShip(placement1);
     board.placeShip();
 
-    const ship2 = createShip(4);
+    const ship2 = new Ship(4);
     const placement2: ShipPlacement = { ship: ship2, direction: 'horizontal', row: 0, column: 0 };
     board.prepareToPlaceShip(placement2);
 
@@ -166,27 +166,27 @@ describe('Game board', () => {
   })
 
   it('will not allow a ship to be placed if touching the edge of another ship', () => {
-    const validPlacement: ShipPlacement = { ship: createShip(3), direction: 'vertical', row: 7, column: 8 };
+    const validPlacement: ShipPlacement = { ship: new Ship(3), direction: 'vertical', row: 7, column: 8 };
     board.prepareToPlaceShip(validPlacement);
     board.placeShip();
 
-    const invalidPlacement: ShipPlacement = { ship: createShip(2), direction: 'vertical', row: 6, column: 7 };
+    const invalidPlacement: ShipPlacement = { ship: new Ship(2), direction: 'vertical', row: 6, column: 7 };
     board.prepareToPlaceShip(invalidPlacement);
     expect(board.isNextShipPlacementValid).toBe(false);
   });
 
   it('will not allow a ship to be placed if touching the corner of another ship', () => {
-    const validPlacement: ShipPlacement = { ship: createShip(1), direction: 'vertical', row: 5, column: 5 };
+    const validPlacement: ShipPlacement = { ship: new Ship(1), direction: 'vertical', row: 5, column: 5 };
     board.prepareToPlaceShip(validPlacement);
     board.placeShip();
 
-    const invalidPlacement: ShipPlacement = { ship: createShip(1), direction: 'vertical', row: 6, column: 6 };
+    const invalidPlacement: ShipPlacement = { ship: new Ship(1), direction: 'vertical', row: 6, column: 6 };
     board.prepareToPlaceShip(invalidPlacement);
     expect(board.isNextShipPlacementValid).toBe(false);
   });
 
   it('throws an error if a ship placement is invalid but you try to place it anyway', () => {
-    const invalidPlacement: ShipPlacement = { ship: createShip(1), direction: 'horizontal', row: 0, column: -5 };
+    const invalidPlacement: ShipPlacement = { ship: new Ship(1), direction: 'horizontal', row: 0, column: -5 };
     board.prepareToPlaceShip(invalidPlacement);
     expect(() => board.placeShip()).toThrow();
   });
@@ -194,7 +194,7 @@ describe('Game board', () => {
   it('throws an error if you try to place a ship without preparing first', () => {
     expect(() => board.placeShip()).toThrow();
 
-    const placement: ShipPlacement = { ship: createShip(1), direction: 'vertical', row: 5, column: 5 };
+    const placement: ShipPlacement = { ship: new Ship(1), direction: 'vertical', row: 5, column: 5 };
     board.prepareToPlaceShip(placement);
     board.placeShip();
     expect(() => board.placeShip()).toThrow();
@@ -207,7 +207,7 @@ describe('Game board', () => {
   });
 
   test('hitting a ship works', () => {
-    const ship = createShip(4);
+    const ship = new Ship(4);
     const placement: ShipPlacement = { ship, direction: 'horizontal', row: 3, column: 4 };
     board.prepareToPlaceShip(placement);
     board.placeShip();
@@ -232,7 +232,7 @@ describe('Game board', () => {
   });
 
   test('hitting an entire ship will sink it', () => {
-    const ship = createShip(3);
+    const ship = new Ship(3);
     const placement: ShipPlacement = { ship, direction: 'vertical', row: 5, column: 3 };
     board.prepareToPlaceShip(placement);
     board.placeShip();
@@ -246,9 +246,9 @@ describe('Game board', () => {
   });
 
   test('sinking all ships will cause board to update "haveAllShipsSunk"', () => {
-    const ship1 = createShip(1);
+    const ship1 = new Ship(1);
     const placement1: ShipPlacement = { ship: ship1, direction: 'vertical', row: 0, column: 0 };
-    const ship2 = createShip(1);
+    const ship2 = new Ship(1);
     const placement2: ShipPlacement = { ship: ship2, direction: 'vertical', row: 1, column: 2 };
 
     board.prepareToPlaceShip(placement1);

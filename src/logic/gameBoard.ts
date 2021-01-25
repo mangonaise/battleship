@@ -23,7 +23,8 @@ class GameBoard {
   public nextShipPlacement: ShipPlacement = null;
   public isNextShipPlacementValid = false;
   public haveAllShipsSunk = false;
-  private ships: Ship[] = [];
+  public ships: Ship[] = [];
+  private _arePositionsLocked = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -51,11 +52,11 @@ class GameBoard {
   }
 
   public placeShip() {
-    if (!this.isNextShipPlacementValid) {
-      throw new Error("Can't place ship as proposed placement is invalid.")
-    }
     if (!this.nextShipPlacement) {
       throw new Error("Can't place ship as there isn't one ready to place.");
+    }
+    if (!this.isNextShipPlacementValid) {
+      return;
     }
 
     const newCellPositions = this.predictCellsInShip(this.nextShipPlacement);
@@ -67,6 +68,11 @@ class GameBoard {
     
     this.ships.push(shipToPlace);
     this.isNextShipPlacementValid = false;
+    this.nextShipPlacement = null;
+  }
+
+  public lockShipsInPlace() {
+    this._arePositionsLocked = true;
   }
 
   public receiveAttack(position: [number, number]) {
@@ -84,6 +90,11 @@ class GameBoard {
 
       const attackedIndex = attackedShip.cellPositions.indexOf(attackedCell);
       attackedShip.hit(attackedIndex);
+      if (attackedShip.isSunk) {
+        attackedShip.cellPositions.forEach(pos => 
+          this.cells[pos[0]][pos[1]] = CellState.shipSunk
+        );
+      }
       this.haveAllShipsSunk = this.ships.every(ship => ship.hits.every(hit => hit === 'hit'));
     }
   }
@@ -95,18 +106,26 @@ class GameBoard {
       throw new Error(`Can't rotate. No ship found at (${position[0]}, ${position[1]}).`);
     }
 
-    this.setStateOfCells(shipToRotate.cellPositions, CellState.empty);
-    this.ships = this.ships.filter(ship => ship !== shipToRotate);
+    const cellsBeforeRotation = shipToRotate.cellPositions;
+    this.setStateOfCells(cellsBeforeRotation, CellState.empty);
 
-    shipToRotate.direction = shipToRotate.direction === 'horizontal' ? 'vertical' : 'horizontal';
+    const newDirection = shipToRotate.direction === 'horizontal' ? 'vertical' : 'horizontal';
+
     const newShipPlacement: ShipPlacement = { 
       ship: shipToRotate, 
-      direction: shipToRotate.direction,
+      direction: newDirection,
       row: shipToRotate.originPosition[0],
       column: shipToRotate.originPosition[1]
     }
     this.prepareToPlaceShip(newShipPlacement);
-    this.placeShip();
+
+    if (this.isNextShipPlacementValid) {
+      shipToRotate.direction = newDirection;
+      this.ships = this.ships.filter(ship => ship !== shipToRotate);
+      this.placeShip();
+    } else {
+      this.setStateOfCells(cellsBeforeRotation, CellState.shipIntact);
+    }
   }
 
   private findShipAt(position: [number, number]) {
@@ -134,8 +153,10 @@ class GameBoard {
 
     for (let checkedRow = row - 1; checkedRow <= row + 1; checkedRow++) {
       for (let checkedColumn = column - 1; checkedColumn <= column + 1; checkedColumn++) {
-        const cellsInRow = this.cells[checkedRow];
-        const targetCell = cellsInRow ? cellsInRow[checkedColumn] : undefined;
+        const isValidRow = checkedRow >= 0 && checkedRow <= 9;
+        const isValidColumn = checkedColumn >= 0 && checkedColumn <= 9;
+        const cellsInRow = isValidRow ? this.cells[checkedRow] : undefined;
+        const targetCell = cellsInRow ? (isValidColumn ? cellsInRow[checkedColumn] : undefined) : undefined;
         surroundingStates.push(targetCell);
       }
     }
@@ -163,6 +184,8 @@ class GameBoard {
   private setStateOfCells(positions: [number, number][], newState: CellState) {
     positions.forEach(pos => this.cells[pos[0]][pos[1]] = newState);
   }
+
+  public get arePositionsLocked() { return this._arePositionsLocked; }
 }
 
 export { CellState, GameBoard };

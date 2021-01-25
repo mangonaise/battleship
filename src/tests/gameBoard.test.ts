@@ -1,3 +1,4 @@
+import { toJS } from 'mobx';
 import { CellState, ShipPlacement, GameBoard } from '../logic/gameBoard';
 import Ship from '../logic/ship';
 
@@ -50,7 +51,7 @@ describe('Game board', () => {
     expect(ship.isSunk).toBe(false);
   });
 
-  it.only('can place a ship vertically', () => {
+  it('can place a ship vertically', () => {
     const ship = new Ship(3);
     const placement: ShipPlacement = { ship, direction: 'vertical', row: 7, column: 8 }
     board.prepareToPlaceShip(placement);
@@ -94,23 +95,25 @@ describe('Game board', () => {
     ];
 
     board.rotateShipAt([3, 6]);
-    expect(board.cells).toEqual(expectedBoardAfterRotation);
+    expect(toJS(board.cells)).toEqual(expectedBoardAfterRotation);
 
     // Rotating it again is the same as undo.
     board.rotateShipAt([4, 4]);
     expect(board.cells).toEqual(boardBeforeRoation);
   });
 
-  it('will not allow rotating a ship if it would go outside of board edges', () => {
+  it('will not do anything if you try to rotate a ship & would go outside of board edges', () => {
     const ship = new Ship(4);
-    const placement: ShipPlacement = { ship, direction: 'vertical', row: 6, column: 7 };
+    const placement: ShipPlacement = { ship, direction: 'vertical', row: 6, column: 9 };
     board.prepareToPlaceShip(placement);
     board.placeShip();
 
-    expect(() => board.rotateShipAt([6, 7])).toThrow();
+    const cellsBeforeAttempt = toJS(board.cells);
+    board.rotateShipAt([6, 9]);
+    expect(toJS(board.cells)).toStrictEqual(cellsBeforeAttempt);
   })
 
-  it('will not allow rotating a ship if it would collide with another ship', () => {
+  it('will not do anything if you try to rotate a ship & it would collide with another ship', () => {
     const ship1 = new Ship(1);
     const placement1: ShipPlacement = { ship: ship1, direction: 'vertical', row: 0, column: 3 };
     board.prepareToPlaceShip(placement1);
@@ -121,7 +124,9 @@ describe('Game board', () => {
     board.prepareToPlaceShip(placement2);
     board.placeShip();
 
-    expect(() => board.rotateShipAt([3, 0])).toThrow("Can't place ship as proposed placement is invalid.");
+    const cellsBeforeAttempt = toJS(board.cells);
+    board.rotateShipAt([3, 0]);
+    expect(toJS(board.cells)).toEqual(cellsBeforeAttempt);
   })
 
   it('will not allow a horizontal ship to be placed outside the board', () => {
@@ -185,12 +190,6 @@ describe('Game board', () => {
     expect(board.isNextShipPlacementValid).toBe(false);
   });
 
-  it('throws an error if a ship placement is invalid but you try to place it anyway', () => {
-    const invalidPlacement: ShipPlacement = { ship: new Ship(1), direction: 'horizontal', row: 0, column: -5 };
-    board.prepareToPlaceShip(invalidPlacement);
-    expect(() => board.placeShip()).toThrow();
-  });
-
   it('throws an error if you try to place a ship without preparing first', () => {
     expect(() => board.placeShip()).toThrow();
 
@@ -243,6 +242,18 @@ describe('Game board', () => {
 
     board.receiveAttack([7, 3]);
     expect(ship.isSunk).toBe(true);
+    expect(board.cells).toEqual([
+      [o, o, o, o, o, o, o, o, o, o],
+      [o, o, o, o, o, o, o, o, o, o],
+      [o, o, o, o, o, o, o, o, o, o],
+      [o, o, o, o, o, o, o, o, o, o],
+      [o, o, o, o, o, o, o, o, o, o],
+      [o, o, o, X, o, o, o, o, o, o],
+      [o, o, o, X, o, o, o, o, o, o],
+      [o, o, o, X, o, o, o, o, o, o],
+      [o, o, o, o, o, o, o, o, o, o],
+      [o, o, o, o, o, o, o, o, o, o]
+    ])
   });
 
   test('sinking all ships will cause board to update "haveAllShipsSunk"', () => {

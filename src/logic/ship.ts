@@ -1,5 +1,3 @@
-import { makeAutoObservable } from "mobx";
-
 type HitState = 'intact' | 'hit';
 
 class Ship {

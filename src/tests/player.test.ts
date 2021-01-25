@@ -45,4 +45,11 @@ describe('Player', () => {
     player.attack([7, 5]);
     expect(opponent.board.haveAllShipsSunk).toBe(true);
   });
+
+  test('cpu will automatically place ships at random', () => {
+    const cpu = new Player('cpu');
+
+    expect(cpu.board.ships.length).toBe(10);
+
+  })
 })

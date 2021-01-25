@@ -9,19 +9,19 @@ describe('Ship', () => {
 
   it('can be hit', () => {
     const ship = createShip(3);
-    ship.hitShip(1);
+    ship.hit(1);
     expect(ship.hits).toEqual([false, true, false]);
-    ship.hitShip(2);
+    ship.hit(2);
     expect(ship.hits).toEqual([false, true, true]);
-    ship.hitShip(0);
+    ship.hit(0);
     expect(ship.hits).toEqual([true, true, true]);
   })
 
   it('becomes sunk if all units are hit', () => {
     const ship = createShip(2);
     expect(ship.isSunk).toEqual(false);
-    ship.hitShip(0);
-    ship.hitShip(1);
+    ship.hit(0);
+    ship.hit(1);
     expect(ship.isSunk).toEqual(true);
   })
 });

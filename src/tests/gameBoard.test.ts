@@ -228,7 +228,7 @@ describe('Game board', () => {
     ]);
 
     expect(ship.hits).toEqual([false, false, true, false]);
-    expect(ship.isSunk).toEqual(false);
+    expect(ship.isSunk).toBe(false);
   });
 
   test('hitting an entire ship will sink it', () => {
@@ -238,12 +238,10 @@ describe('Game board', () => {
     board.placeShip();
 
     board.attack([5, 3]);
-
+    board.attack([6, 3]);
     expect(ship.isSunk).toBe(false);
 
-    board.attack([6, 3]);
     board.attack([7, 3]);
-
     expect(ship.isSunk).toBe(true);
-  })
+  });
 });

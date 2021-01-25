@@ -153,7 +153,7 @@ const createGameBoard = () => {
 
       if (attackedCell) {
         const attackedIndex = attackedShip.cellPositions.indexOf(attackedCell);
-        attackedShip.hits[attackedIndex] = true;
+        attackedShip.hit(attackedIndex);
       } else {
         throw new Error('Hmm... a ship was attacked but its attacked cell cannot be found.');
       }

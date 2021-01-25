@@ -1,7 +1,7 @@
 export interface Ship {
   size: number,
   hits: boolean[],
-  hitShip: (index: number) => void,
+  hit: (index: number) => void,
   isSunk: boolean,
   cellPositions: [number, number][],
   originPosition: [number, number],
@@ -10,6 +10,7 @@ export interface Ship {
 
 const createShip = (initSize: number) => {
   let hits = initializeHits();
+  let isSunk = false;
   let cellPositions: [number, number][] = [];
   let originPosition: [number, number] = [-1, -1];
   let direction: 'horizontal' | 'vertical' = 'horizontal';
@@ -18,8 +19,9 @@ const createShip = (initSize: number) => {
     return Array.from({ length: initSize }).map(x => false);
   }
 
-  function hitShip(index: number) {
+  function hit(index: number) {
     hits[index] = true;
+    isSunk = hits.every(hit => hit === true);
   }
 
   function setCellPositions(newPositions: [number, number][]) {
@@ -32,8 +34,8 @@ const createShip = (initSize: number) => {
   let output: Ship = {
     get size() { return initSize; },
     get hits() { return hits; },
-    get hitShip() { return hitShip; },
-    get isSunk() { return hits.every(hit => hit === true); },
+    get hit() { return hit; },
+    get isSunk() { return isSunk; },
     get cellPositions() { return cellPositions; },
     set cellPositions(newPositions) { setCellPositions(newPositions); },
     get originPosition() { return originPosition; },

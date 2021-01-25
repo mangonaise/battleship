@@ -44,7 +44,7 @@ describe('Game board', () => {
       [o, o, o, o, o, o, o, o, o, o]
     ]);
     expect(ship.cellPositions).toEqual([[3, 4], [3, 5], [3, 6], [3, 7]]);
-    expect(ship.hits).toEqual([false, false, false, false]);
+    expect(ship.hits).toEqual(['intact', 'intact', 'intact', 'intact']);
     expect(ship.originPosition).toEqual([3, 4]);
     expect(ship.direction).toBe('horizontal');
     expect(ship.isSunk).toBe(false);
@@ -68,7 +68,7 @@ describe('Game board', () => {
       [o, o, o, o, o, o, o, o, S, o]
     ]);
     expect(ship.cellPositions).toEqual([[7, 8], [8, 8], [9, 8]]);
-    expect(ship.hits).toEqual([false, false, false]);
+    expect(ship.hits).toEqual(['intact', 'intact', 'intact']);
     expect(ship.originPosition).toEqual([7, 8]);
     expect(ship.direction).toBe('vertical');
     expect(ship.isSunk).toBe(false);
@@ -227,7 +227,7 @@ describe('Game board', () => {
       [o, o, o, o, o, o, o, o, o, o]
     ]);
 
-    expect(ship.hits).toEqual([false, false, true, false]);
+    expect(ship.hits).toEqual(['intact', 'intact', 'hit', 'intact']);
     expect(ship.isSunk).toBe(false);
   });
 

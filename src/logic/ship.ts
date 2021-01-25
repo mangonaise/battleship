@@ -1,6 +1,10 @@
+import { CellState } from "./gameBoard";
+
+type HitState = 'intact' | 'hit';
+
 export interface Ship {
   size: number,
-  hits: boolean[],
+  hits: HitState[],
   hit: (index: number) => void,
   isSunk: boolean,
   cellPositions: [number, number][],
@@ -9,19 +13,19 @@ export interface Ship {
 }
 
 const createShip = (initSize: number) => {
-  let hits = initializeHits();
+  let hits: HitState[] = initializeHits();
   let isSunk = false;
   let cellPositions: [number, number][] = [];
   let originPosition: [number, number] = [-1, -1];
   let direction: 'horizontal' | 'vertical' = 'horizontal';
 
   function initializeHits() {
-    return Array.from({ length: initSize }).map(x => false);
+    return Array.from({ length: initSize }).map(x => 'intact' as HitState);
   }
 
   function hit(index: number) {
-    hits[index] = true;
-    isSunk = hits.every(hit => hit === true);
+    hits[index] = 'hit';
+    isSunk = hits.every(state => state === 'hit');
   }
 
   function setCellPositions(newPositions: [number, number][]) {

@@ -4,17 +4,17 @@ describe('Ship', () => {
   it('initializes correctly', () => {
     const ship = createShip(4);
     expect(ship.size).toBe(4);
-    expect(ship.hits).toEqual([false, false, false, false]);
+    expect(ship.hits).toEqual(['intact', 'intact', 'intact', 'intact']);
   });
 
   it('can be hit', () => {
     const ship = createShip(3);
     ship.hit(1);
-    expect(ship.hits).toEqual([false, true, false]);
+    expect(ship.hits).toEqual(['intact', 'hit', 'intact']);
     ship.hit(2);
-    expect(ship.hits).toEqual([false, true, true]);
+    expect(ship.hits).toEqual(['intact', 'hit', 'hit']);
     ship.hit(0);
-    expect(ship.hits).toEqual([true, true, true]);
+    expect(ship.hits).toEqual(['hit', 'hit', 'hit']);
   })
 
   it('becomes sunk if all units are hit', () => {

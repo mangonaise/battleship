@@ -1,6 +1,5 @@
-import { create } from 'domain';
 import { CellState, ShipPlacement, createGameBoard } from '../logic/gameBoard';
-import createShip, { Ship } from '../logic/ship';
+import createShip from '../logic/ship';
 
 let board = createGameBoard();
 const o = CellState.empty;
@@ -44,7 +43,9 @@ describe('Game board', () => {
       [o, o, o, o, o, o, o, o, o, o]
     ]);
     expect(ship.cellPositions).toEqual([[3, 4], [3, 5], [3, 6], [3, 7]]);
-    expect(ship.direction).toEqual('horizontal');
+    expect(ship.originPosition).toEqual([3, 4]);
+    expect(ship.direction).toBe('horizontal');
+    expect(ship.isSunk).toBe(false);
   });
 
   it('can place a ship vertically', () => {
@@ -65,7 +66,9 @@ describe('Game board', () => {
       [o, o, o, o, o, o, o, o, S, o]
     ]);
     expect(ship.cellPositions).toEqual([[7, 8], [8, 8], [9, 8]]);
-    expect(ship.direction).toEqual('vertical');
+    expect(ship.originPosition).toEqual([7, 8]);
+    expect(ship.direction).toBe('vertical');
+    expect(ship.isSunk).toBe(false);
   });
 
   it('can rotate a ship', () => {
@@ -192,5 +195,5 @@ describe('Game board', () => {
     board.prepareToPlaceShip(placement);
     board.placeShip();
     expect(() => board.placeShip()).toThrow();
-  })
+  });
 });

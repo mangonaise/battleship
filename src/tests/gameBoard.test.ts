@@ -202,7 +202,7 @@ describe('Game board', () => {
 
   test('attacking an empty cell sets its state to "missed"', () => {
     expect(board.cells[5][8]).toEqual(CellState.empty);
-    board.attack([5, 8]);
+    board.receiveAttack([5, 8]);
     expect(board.cells[5][8]).toEqual(CellState.missed);
   });
 
@@ -212,7 +212,7 @@ describe('Game board', () => {
     board.prepareToPlaceShip(placement);
     board.placeShip();
 
-    board.attack([3, 6]);
+    board.receiveAttack([3, 6]);
 
     expect(board.cells).toEqual([
       [o, o, o, o, o, o, o, o, o, o],
@@ -237,11 +237,29 @@ describe('Game board', () => {
     board.prepareToPlaceShip(placement);
     board.placeShip();
 
-    board.attack([5, 3]);
-    board.attack([6, 3]);
+    board.receiveAttack([5, 3]);
+    board.receiveAttack([6, 3]);
     expect(ship.isSunk).toBe(false);
 
-    board.attack([7, 3]);
+    board.receiveAttack([7, 3]);
     expect(ship.isSunk).toBe(true);
+  });
+
+  test('sinking all ships will cause board to update "haveAllShipsSunk"', () => {
+    const ship1 = createShip(1);
+    const placement1: ShipPlacement = { ship: ship1, direction: 'vertical', row: 0, column: 0 };
+    const ship2 = createShip(1);
+    const placement2: ShipPlacement = { ship: ship2, direction: 'vertical', row: 1, column: 2 };
+
+    board.prepareToPlaceShip(placement1);
+    board.placeShip();
+    board.prepareToPlaceShip(placement2);
+    board.placeShip();
+
+    board.receiveAttack([0,0]);
+    expect(board.haveAllShipsSunk).toBe(false);
+
+    board.receiveAttack([1,2]);
+    expect(board.haveAllShipsSunk).toBe(true);
   });
 });

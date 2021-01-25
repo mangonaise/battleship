@@ -1,5 +1,18 @@
 import { Ship } from './ship';
 
+export interface Board {
+  cells: CellField,
+  prepareToPlaceShip: (placement: ShipPlacement) => void,
+  nextShipPlacement: ShipPlacement,
+  isNextShipPlacementValid: boolean,
+  placeShip: () => void,
+  rotateShipAt: (position: [number, number]) => void,
+  receiveAttack: (position: [number, number]) => void,
+  haveAllShipsSunk: boolean
+}
+
+type CellField = CellState[][];
+
 enum CellState {
   empty,
   missed,
@@ -7,8 +20,6 @@ enum CellState {
   shipHit,
   shipSunk
 }
-
-type CellField = CellState[][];
 
 export interface ShipPlacement {
   ship: Ship, 
@@ -18,11 +29,15 @@ export interface ShipPlacement {
 }
 
 const createGameBoard = () => {
+  // public
   let cells: CellField = initializeBoard();
-  let ships: Ship[] = [];
   let nextShipPlacement: ShipPlacement;
-  let shipToPlace: Ship | null;
   let isNextShipPlacementValid = false;
+  let haveAllShipsSunk = false;
+
+  // private
+  let _ships: Ship[] = [];
+  let _shipToPlace: Ship | null;
 
   function initializeBoard() {
     return (
@@ -36,23 +51,23 @@ const createGameBoard = () => {
     if (!isNextShipPlacementValid) {
       throw new Error("Can't place ship as proposed placement is invalid.")
     }
-    if (!shipToPlace) {
+    if (!_shipToPlace) {
       throw new Error("Can't place ship as there isn't one ready to place.");
     }
 
     const newCellPositions = predictCellsInShip(nextShipPlacement)
-    shipToPlace.cellPositions = newCellPositions;
-    shipToPlace.direction = nextShipPlacement.direction;
-    ships.push(shipToPlace);
+    _shipToPlace.cellPositions = newCellPositions;
+    _shipToPlace.direction = nextShipPlacement.direction;
+    _ships.push(_shipToPlace);
 
     setStateOfCells(newCellPositions, CellState.shipIntact);
     
     isNextShipPlacementValid = false;
-    shipToPlace = null;
+    _shipToPlace = null;
   }
 
   function findShipAt(position: [number, number]) {
-    return ships.find(ship => (
+    return _ships.find(ship => (
       ship.cellPositions.some(cellPos => (cellPos[0] === position[0] && cellPos[1] === position[1]))
     ))
   }
@@ -65,7 +80,7 @@ const createGameBoard = () => {
     }
 
     setStateOfCells(shipToRotate.cellPositions, CellState.empty);
-    ships = ships.filter(ship => ship !== shipToRotate);
+    _ships = _ships.filter(ship => ship !== shipToRotate);
 
     shipToRotate.direction = shipToRotate.direction === 'horizontal' ? 'vertical' : 'horizontal';
     const newShipPlacement: ShipPlacement = { 
@@ -89,15 +104,15 @@ const createGameBoard = () => {
 
     isNextShipPlacementValid = isShipWithinBoardEdges && !wouldShipsBeInContact(shipPlacement);
     nextShipPlacement = shipPlacement;
-    shipToPlace = ship;
+    _shipToPlace = ship;
   }
 
   function wouldShipsBeInContact(proposedPlacement: ShipPlacement) {
     const proposedCells = predictCellsInShip(proposedPlacement);
 
     for (const cell of proposedCells) {
-      const surrounding = getSurroundingCellStates(cell).filter(state => state !== undefined);
-      const isContact = !surrounding.every(state => state === CellState.empty);
+      const surroundingCellStates = getSurroundingCellStates(cell).filter(state => state !== undefined);
+      const isContact = !surroundingCellStates.every(state => state === CellState.empty);
       if (isContact) return true;
     }
 
@@ -109,13 +124,11 @@ const createGameBoard = () => {
     const column = cell[1];
     const surroundingStates: (CellState | undefined)[] = [];
 
-
     for (let checkedRow = row - 1; checkedRow <= row + 1; checkedRow++) {
       for (let checkedColumn = column - 1; checkedColumn <= column + 1; checkedColumn++) {
         const cellsInRow = cells[checkedRow];
         const targetCell = cellsInRow ? cellsInRow[checkedColumn] : undefined;
         surroundingStates.push(targetCell);
-        
       }
     }
 
@@ -142,14 +155,14 @@ const createGameBoard = () => {
     positions.forEach(pos => cells[pos[0]][pos[1]] = newState);
   }
   
-  function attack(position: [number, number]) {
+  function receiveAttack(position: [number, number]) {
     const attackedShip = findShipAt(position);
     setStateOfCells([position], attackedShip ? CellState.shipHit : CellState.missed);
 
     if (attackedShip) {
       const attackedCell = attackedShip.cellPositions.find(shipCellPos => (
         shipCellPos[0] === position[0] && shipCellPos[1] === position[1]
-      ))
+      ));
 
       if (attackedCell) {
         const attackedIndex = attackedShip.cellPositions.indexOf(attackedCell);
@@ -157,18 +170,23 @@ const createGameBoard = () => {
       } else {
         throw new Error('Hmm... a ship was attacked but its attacked cell cannot be found.');
       }
+
+      haveAllShipsSunk = _ships.every(ship => ship.hits.every(hit => hit === 'hit'));
     }
   }
 
-  return {
+  let output: Board = {
     get cells() { return cells; },
     get prepareToPlaceShip() { return prepareToPlaceShip; },
     get nextShipPlacement() { return nextShipPlacement; },
     get isNextShipPlacementValid() { return isNextShipPlacementValid; },
     get placeShip() { return placeShip; },
     get rotateShipAt() { return rotateShipAt; },
-    get attack() { return attack; },
+    get receiveAttack() { return receiveAttack; },
+    get haveAllShipsSunk() { return haveAllShipsSunk; },
   }
+  
+  return output;
 }
 
 export { CellState, createGameBoard };

@@ -1,8 +1,9 @@
 import { CellState, ShipPlacement, createGameBoard } from '../logic/gameBoard';
-import createShip from '../logic/ship';
+import createShip, { Ship } from '../logic/ship';
 
 let board = createGameBoard();
 const o = CellState.empty;
+const m = CellState.missed;
 const S = CellState.shipIntact;
 const H = CellState.shipHit;
 const X = CellState.shipSunk;
@@ -43,6 +44,7 @@ describe('Game board', () => {
       [o, o, o, o, o, o, o, o, o, o]
     ]);
     expect(ship.cellPositions).toEqual([[3, 4], [3, 5], [3, 6], [3, 7]]);
+    expect(ship.hits).toEqual([false, false, false, false]);
     expect(ship.originPosition).toEqual([3, 4]);
     expect(ship.direction).toBe('horizontal');
     expect(ship.isSunk).toBe(false);
@@ -66,6 +68,7 @@ describe('Game board', () => {
       [o, o, o, o, o, o, o, o, S, o]
     ]);
     expect(ship.cellPositions).toEqual([[7, 8], [8, 8], [9, 8]]);
+    expect(ship.hits).toEqual([false, false, false]);
     expect(ship.originPosition).toEqual([7, 8]);
     expect(ship.direction).toBe('vertical');
     expect(ship.isSunk).toBe(false);
@@ -196,4 +199,51 @@ describe('Game board', () => {
     board.placeShip();
     expect(() => board.placeShip()).toThrow();
   });
+
+  test('attacking an empty cell sets its state to "missed"', () => {
+    expect(board.cells[5][8]).toEqual(CellState.empty);
+    board.attack([5, 8]);
+    expect(board.cells[5][8]).toEqual(CellState.missed);
+  });
+
+  test('hitting a ship works', () => {
+    const ship = createShip(4);
+    const placement: ShipPlacement = { ship, direction: 'horizontal', row: 3, column: 4 };
+    board.prepareToPlaceShip(placement);
+    board.placeShip();
+
+    board.attack([3, 6]);
+
+    expect(board.cells).toEqual([
+      [o, o, o, o, o, o, o, o, o, o],
+      [o, o, o, o, o, o, o, o, o, o],
+      [o, o, o, o, o, o, o, o, o, o],
+      [o, o, o, o, S, S, H, S, o, o],
+      [o, o, o, o, o, o, o, o, o, o],
+      [o, o, o, o, o, o, o, o, o, o],
+      [o, o, o, o, o, o, o, o, o, o],
+      [o, o, o, o, o, o, o, o, o, o],
+      [o, o, o, o, o, o, o, o, o, o],
+      [o, o, o, o, o, o, o, o, o, o]
+    ]);
+
+    expect(ship.hits).toEqual([false, false, true, false]);
+    expect(ship.isSunk).toEqual(false);
+  });
+
+  test('hitting an entire ship will sink it', () => {
+    const ship = createShip(3);
+    const placement: ShipPlacement = { ship, direction: 'vertical', row: 5, column: 3 };
+    board.prepareToPlaceShip(placement);
+    board.placeShip();
+
+    board.attack([5, 3]);
+
+    expect(ship.isSunk).toBe(false);
+
+    board.attack([6, 3]);
+    board.attack([7, 3]);
+
+    expect(ship.isSunk).toBe(true);
+  })
 });

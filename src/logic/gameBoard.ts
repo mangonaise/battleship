@@ -2,6 +2,7 @@ import { Ship } from './ship';
 
 enum CellState {
   empty,
+  missed,
   shipIntact,
   shipHit,
   shipSunk
@@ -50,10 +51,14 @@ const createGameBoard = () => {
     shipToPlace = null;
   }
 
-  function rotateShipAt(position: [number, number]) {
-    const shipToRotate = ships.find(ship => (
+  function findShipAt(position: [number, number]) {
+    return ships.find(ship => (
       ship.cellPositions.some(cellPos => (cellPos[0] === position[0] && cellPos[1] === position[1]))
     ))
+  }
+
+  function rotateShipAt(position: [number, number]) {
+    const shipToRotate = findShipAt(position); 
 
     if (!shipToRotate) {
       throw new Error(`Can't rotate. No ship found at (${position[0]}, ${position[1]}).`);
@@ -136,6 +141,24 @@ const createGameBoard = () => {
   function setStateOfCells(positions: [number, number][], newState: CellState) {
     positions.forEach(pos => cells[pos[0]][pos[1]] = newState);
   }
+  
+  function attack(position: [number, number]) {
+    const attackedShip = findShipAt(position);
+    setStateOfCells([position], attackedShip ? CellState.shipHit : CellState.missed);
+
+    if (attackedShip) {
+      const attackedCell = attackedShip.cellPositions.find(shipCellPos => (
+        shipCellPos[0] === position[0] && shipCellPos[1] === position[1]
+      ))
+
+      if (attackedCell) {
+        const attackedIndex = attackedShip.cellPositions.indexOf(attackedCell);
+        attackedShip.hits[attackedIndex] = true;
+      } else {
+        throw new Error('Hmm... a ship was attacked but its attacked cell cannot be found.');
+      }
+    }
+  }
 
   return {
     get cells() { return cells; },
@@ -144,6 +167,7 @@ const createGameBoard = () => {
     get isNextShipPlacementValid() { return isNextShipPlacementValid; },
     get placeShip() { return placeShip; },
     get rotateShipAt() { return rotateShipAt; },
+    get attack() { return attack; },
   }
 }
 

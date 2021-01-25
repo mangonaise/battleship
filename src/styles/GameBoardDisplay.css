@@ -1,0 +1,48 @@
+:root {
+  --board-dimension: repeat(10, 35px);
+}
+
+.board-display-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.board-grid {
+  display: grid;
+  grid-template-rows: var(--board-dimension);
+  grid-template-columns: var(--board-dimension);
+  border: solid 2px gray;
+  margin: 20px 50px;
+}
+
+.board-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: solid 1px rgb(219, 219, 219);
+}
+
+.board-cell:hover {
+  border: solid 2px rgb(63, 63, 63);
+}
+
+.cell-revealed {
+  background-color: rgb(184, 212, 177);
+  border-color: rgb(123, 163, 112);
+}
+
+.cell-missed {
+  background-color:  rgb(219, 219, 219);
+}
+
+.cell-hit {
+  background-color: rgb(230, 228, 121);
+  border-color: rgb(175, 174, 96);
+}
+
+.cell-sunk {
+  background-color: rgb(179, 73, 73);
+  border-color: rgb(126, 47, 47);
+}

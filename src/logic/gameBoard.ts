@@ -18,7 +18,9 @@ export interface ShipPlacement {
 
 const createGameBoard = () => {
   let cells: CellField = initializeBoard();
+  let ships: Ship[] = [];
   let nextShipPlacement: ShipPlacement;
+  let shipToPlace: Ship | null;
   let isNextShipPlacementValid = false;
 
   function initializeBoard() {
@@ -27,6 +29,48 @@ const createGameBoard = () => {
         return Array.from({ length: 10 }).map(column => CellState.empty)
       })
     )
+  }
+
+  function placeShip() {
+    if (!isNextShipPlacementValid) {
+      throw new Error("Can't place ship as proposed placement is invalid.")
+    }
+    if (!shipToPlace) {
+      throw new Error("Can't place ship as there isn't one ready to place.");
+    }
+
+    const newCellPositions = predictCellsInShip(nextShipPlacement)
+    shipToPlace.cellPositions = newCellPositions;
+    shipToPlace.direction = nextShipPlacement.direction;
+    ships.push(shipToPlace);
+
+    setStateOfCells(newCellPositions, CellState.shipIntact);
+    
+    isNextShipPlacementValid = false;
+    shipToPlace = null;
+  }
+
+  function rotateShipAt(position: [number, number]) {
+    const shipToRotate = ships.find(ship => (
+      ship.cellPositions.some(cellPos => (cellPos[0] === position[0] && cellPos[1] === position[1]))
+    ))
+
+    if (!shipToRotate) {
+      throw new Error(`Can't rotate. No ship found at (${position[0]}, ${position[1]}).`);
+    }
+
+    setStateOfCells(shipToRotate.cellPositions, CellState.empty);
+    ships = ships.filter(ship => ship !== shipToRotate);
+
+    shipToRotate.direction = shipToRotate.direction === 'horizontal' ? 'vertical' : 'horizontal';
+    const newShipPlacement: ShipPlacement = { 
+      ship: shipToRotate, 
+      direction: shipToRotate.direction,
+      row: shipToRotate.originPosition[0],
+      column: shipToRotate.originPosition[1]
+    }
+    prepareToPlaceShip(newShipPlacement);
+    placeShip();
   }
 
   function prepareToPlaceShip(shipPlacement: ShipPlacement) {
@@ -40,10 +84,11 @@ const createGameBoard = () => {
 
     isNextShipPlacementValid = isShipWithinBoardEdges && !wouldShipsBeInContact(shipPlacement);
     nextShipPlacement = shipPlacement;
+    shipToPlace = ship;
   }
 
   function wouldShipsBeInContact(proposedPlacement: ShipPlacement) {
-    const proposedCells = getCellsInShip(proposedPlacement);
+    const proposedCells = predictCellsInShip(proposedPlacement);
 
     for (const cell of proposedCells) {
       const surrounding = getSurroundingCellStates(cell).filter(state => state !== undefined);
@@ -59,18 +104,20 @@ const createGameBoard = () => {
     const column = cell[1];
     const surroundingStates: (CellState | undefined)[] = [];
 
+
     for (let checkedRow = row - 1; checkedRow <= row + 1; checkedRow++) {
       for (let checkedColumn = column - 1; checkedColumn <= column + 1; checkedColumn++) {
-        const cellsInRow = cells[checkedColumn];
+        const cellsInRow = cells[checkedRow];
         const targetCell = cellsInRow ? cellsInRow[checkedColumn] : undefined;
         surroundingStates.push(targetCell);
+        
       }
     }
 
     return surroundingStates;
   }
 
-  function getCellsInShip(shipPlacement: ShipPlacement) {
+  function predictCellsInShip(shipPlacement: ShipPlacement) {
     const { ship, direction, row, column } = shipPlacement;
 
     let positions: [number, number][] = []
@@ -90,22 +137,13 @@ const createGameBoard = () => {
     positions.forEach(pos => cells[pos[0]][pos[1]] = newState);
   }
 
-  function placeShip() {
-    if (!isNextShipPlacementValid) {
-      throw new Error("Can't place ship as proposed placement is invalid.")
-    }
-
-    const cellPositions = getCellsInShip(nextShipPlacement)
-    setStateOfCells(cellPositions, CellState.shipIntact);
-    isNextShipPlacementValid = false;
-  }
-
   return {
     get cells() { return cells; },
     get prepareToPlaceShip() { return prepareToPlaceShip; },
     get nextShipPlacement() { return nextShipPlacement; },
     get isNextShipPlacementValid() { return isNextShipPlacementValid; },
     get placeShip() { return placeShip; },
+    get rotateShipAt() { return rotateShipAt; },
   }
 }
 

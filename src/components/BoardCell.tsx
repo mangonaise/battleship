@@ -23,7 +23,7 @@ const BoardCell: React.FC<{ cell: CellState, owner: Player, index: number }> = (
 
   function setCellStyle(cellState: CellState) {
     let style = '';
-    const stateStyles = ['', 'cell-missed', '', 'cell-hit', 'cell-sunk'];
+    const stateStyles = ['', 'cell-missed', '', 'cell-hit', 'cell-sunk', 'cell-known-empty'];
     style = stateStyles[cellState];
   
     if (owner.type === 'human') {

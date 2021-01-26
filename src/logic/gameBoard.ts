@@ -105,8 +105,16 @@ class GameBoard {
       const attackedIndex = attackedShip.cellPositions.indexOf(attackedCell);
       attackedShip.hit(attackedIndex);
       if (attackedShip.isSunk) {
-        attackedShip.cellPositions.forEach(pos => {
-          this.cells[pos[0]][pos[1]] = CellState.shipSunk;
+        attackedShip.cellPositions.forEach(sunkPos => {
+          this.cells[sunkPos[0]][sunkPos[1]] = CellState.shipSunk;
+          let knownCellPositions = 
+            [...this.getAdjacentCellPositions(sunkPos), ...this.getCornerCellPositions(sunkPos)]
+            .filter((pos): pos is [number, number] => pos !== undefined)
+            .filter(pos => {
+              let cellState = this.cells[pos[0]][pos[1]];
+              return cellState === CellState.empty;
+            });
+          this.setStateOfCells(knownCellPositions, CellState.knownEmpty);
         });
       }
       this.haveAllShipsSunk = this.ships.every(ship => ship.hits.every(hit => hit === 'hit'));
@@ -186,6 +194,19 @@ class GameBoard {
   public getAdjacentCellStates(position: [number, number]) {
     const surrounding = this.getSurroundingCellStates(position);
     return [surrounding[1], surrounding[3], surrounding[5], surrounding[7]];
+  }
+
+  private getCornerCellPositions(position: [number, number]): ([number, number] | undefined)[] {
+    const existsRowBefore = position[0] - 1 >= 0;
+    const existsRowAfter = position[0] + 1 <= 9;
+    const existsColumnBefore = position[1] - 1 >= 0;
+    const existsColumnAfter = position[1] + 1 <= 9;
+    return [
+      existsRowBefore && existsColumnBefore ? [position[0] - 1, position[1] - 1] : undefined,
+      existsRowBefore && existsColumnAfter ? [position[0] - 1, position[1] + 1] : undefined,
+      existsRowAfter && existsColumnBefore ? [position[0] + 1, position[1] - 1] : undefined,
+      existsRowAfter && existsColumnAfter ? [position[0] + 1, position[1] + 1] : undefined
+    ];
   }
 
   public getAdjacentCellPositions(position: [number, number]): ([number, number] | undefined)[] {

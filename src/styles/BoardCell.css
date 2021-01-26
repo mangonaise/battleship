@@ -4,6 +4,7 @@
   align-items: center;
   flex-direction: column;
   border: solid 1px rgb(219, 219, 219);
+  color: transparent;
 }
 
 .board-cell:hover {
@@ -15,10 +16,17 @@
   border-color: rgb(151, 190, 140);
 }
 
+.cell-known-empty {
+  transition: all 1s;
+  color: rgb(216, 216, 216);
+  background-color:  rgb(240, 240, 240);
+}
+
 .cell-missed {
   animation: miss 0.2s forwards linear;
 }
-.cell-missed::after {
+
+.cell-missed::after, .cell-known-empty::after {
   content: "·";
 }
 

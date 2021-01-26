@@ -8,6 +8,7 @@ const m = CellState.missed;
 const S = CellState.shipIntact;
 const H = CellState.shipHit;
 const X = CellState.shipSunk;
+const e = CellState.knownEmpty;
 
 describe('Game board', () => {
   beforeEach(() => board = new GameBoard());
@@ -247,11 +248,11 @@ describe('Game board', () => {
       [o, o, o, o, o, o, o, o, o, o],
       [o, o, o, o, o, o, o, o, o, o],
       [o, o, o, o, o, o, o, o, o, o],
-      [o, o, o, o, o, o, o, o, o, o],
-      [o, o, o, X, o, o, o, o, o, o],
-      [o, o, o, X, o, o, o, o, o, o],
-      [o, o, o, X, o, o, o, o, o, o],
-      [o, o, o, o, o, o, o, o, o, o],
+      [o, o, e, e, e, o, o, o, o, o],
+      [o, o, e, X, e, o, o, o, o, o],
+      [o, o, e, X, e, o, o, o, o, o],
+      [o, o, e, X, e, o, o, o, o, o],
+      [o, o, e, e, e, o, o, o, o, o],
       [o, o, o, o, o, o, o, o, o, o]
     ])
   });

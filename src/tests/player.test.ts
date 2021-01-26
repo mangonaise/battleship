@@ -70,4 +70,26 @@ describe('Player', () => {
     expect(human.isPlayerTurn).toBe(true);
     expect(cpu.isPlayerTurn).toBe(false);
   });
+
+  test('computer will check in a line if 3 cells surrounding a hit cell are missed', () => {
+    const human = new Player('human');
+    const cpu = new Player('cpu');
+    human.opponent = cpu;
+    cpu.opponent = human;
+
+    human.board.prepareToPlaceShip({ ship: new Ship(3), direction: 'horizontal', row: 3, column: 3 });
+    human.board.placeShip();
+
+    cpu.attack([2, 3]);
+    cpu.attack([3, 2]);
+    cpu.attack([4, 3]);
+    cpu.attack([3, 3]);
+
+    cpu.makeSmartMove();
+    expect(cpu.opponent.board.cells[3][4]).toBe(CellState.shipHit);
+
+    cpu.makeSmartMove();
+    expect(cpu.opponent.board.cells[3][5]).toBe(CellState.shipSunk);
+    expect(human.board.ships[0].isSunk).toBe(true);
+  });
 })

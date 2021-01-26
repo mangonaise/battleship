@@ -8,7 +8,8 @@ enum CellState {
   missed,
   shipIntact,
   shipHit,
-  shipSunk
+  shipSunk,
+  knownEmpty
 }
 
 export type ShipPlacement = {
@@ -75,17 +76,17 @@ class GameBoard {
     this._arePositionsLocked = true;
   }
 
-  public findFreeCells() {
-    const freeCells: [number, number][] = [];
+  public findCellsWithState(states: CellState[]) {
+    const positions: [number, number][] = [];
     for (let row = 0; row < 10; row++) {
       for (let column = 0; column < 10; column++) {
         const cellState = this.cells[row][column];
-        if (cellState === CellState.empty || cellState === CellState.shipIntact) {
-          freeCells.push([row, column]);
+        if (states.includes(cellState)) {
+          positions.push([row, column]);
         }
       }
     }
-    return freeCells;
+    return positions;
   }
 
   public receiveAttack(position: [number, number]) {
@@ -104,9 +105,9 @@ class GameBoard {
       const attackedIndex = attackedShip.cellPositions.indexOf(attackedCell);
       attackedShip.hit(attackedIndex);
       if (attackedShip.isSunk) {
-        attackedShip.cellPositions.forEach(pos => 
-          this.cells[pos[0]][pos[1]] = CellState.shipSunk
-        );
+        attackedShip.cellPositions.forEach(pos => {
+          this.cells[pos[0]][pos[1]] = CellState.shipSunk;
+        });
       }
       this.haveAllShipsSunk = this.ships.every(ship => ship.hits.every(hit => hit === 'hit'));
     }
@@ -159,9 +160,9 @@ class GameBoard {
     return false;
   }
 
-  private getSurroundingCellStates(cell: [number, number]) {
-    const row = cell[0];
-    const column = cell[1];
+  public getSurroundingCellStates(position: [number, number]) {
+    const row = position[0];
+    const column = position[1];
     const surroundingStates: (CellState | undefined)[] = [];
 
     for (let checkedRow = row - 1; checkedRow <= row + 1; checkedRow++) {
@@ -175,6 +176,25 @@ class GameBoard {
     }
 
     return surroundingStates;
+  }
+
+  public getCornerCellStates(position: [number, number]) {
+    const surrounding = this.getSurroundingCellStates(position);
+    return [surrounding[0], surrounding[2], surrounding[6], surrounding[8]];
+  }
+
+  public getAdjacentCellStates(position: [number, number]) {
+    const surrounding = this.getSurroundingCellStates(position);
+    return [surrounding[1], surrounding[3], surrounding[5], surrounding[7]];
+  }
+
+  public getAdjacentCellPositions(position: [number, number]): ([number, number] | undefined)[] {
+    return [
+      position[0] - 1 >= 0 ? [position[0] - 1, position[1]] : undefined,
+      position[1] - 1 >= 0 ? [position[0], position[1] - 1] : undefined,
+      position[1] + 1 <= 9 ? [position[0], position[1] + 1] : undefined,
+      position[0] + 1 <= 9 ? [position[0] + 1, position[1]] : undefined,
+    ];
   }
 
   private predictCellsInShip(shipPlacement: ShipPlacement) {

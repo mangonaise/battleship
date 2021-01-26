@@ -7,7 +7,7 @@ const human = new Player('human');
 human.placeRandomShips();
 human.board.lockShipsInPlace();
 const cpu = new Player('cpu');
-cpu.autoAttackDelay = 2;
+cpu.autoAttackDelay = 1.9;
 
 human.opponent = cpu;
 cpu.opponent = human;

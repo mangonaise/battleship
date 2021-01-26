@@ -45,6 +45,22 @@
   border: solid 1px rgb(219, 219, 219);
 }
 
+.cell-top-left {
+  border-top-left-radius: 6px;
+}
+
+.cell-top-right {
+  border-top-right-radius: 6px;
+}
+
+.cell-bottom-left {
+  border-bottom-left-radius: 6px;
+}
+
+.cell-bottom-right {
+  border-bottom-right-radius: 6px;
+}
+
 @keyframes hit {
   from {
     background-color: rgb(158, 112, 26);
@@ -57,7 +73,7 @@
 @keyframes sink {
   from {
     color: transparent;
-    background-color: rgb(245, 51, 51);
+    background-color: rgb(245, 96, 96);
   }
   to {
     color: rgb(126, 47, 47);
@@ -69,7 +85,7 @@
 @keyframes miss {
   from {
     color: transparent;
-    background-color: rgb(65, 65, 65);
+    background-color: rgb(102, 102, 102);
   }
   to {
     color: rgb(216, 216, 216);

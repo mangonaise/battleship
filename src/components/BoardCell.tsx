@@ -39,6 +39,11 @@ const BoardCell: React.FC<{ cell: CellState, owner: Player, index: number }> = (
         style += ' cell-uninteractable';
       }
     }
+
+    if (index === 0) style += ' cell-top-left';
+    else if (index === 9) style += ' cell-top-right';
+    else if (index === 90) style += ' cell-bottom-left';
+    else if (index === 99) style += ' cell-bottom-right';
     
     return style;
   }

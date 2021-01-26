@@ -14,9 +14,10 @@
   grid-template-rows: var(--board-dimension);
   grid-template-columns: var(--board-dimension);
   border: solid 2px gray;
+  border-radius: 8px;
   margin: 20px 50px;
   box-shadow: rgb(219, 219, 219) 0px 0px 0px 2px inset;
-  transition: opacity 1s cubic-bezier(0.9,0.1,0.9,0.1);
+  transition: opacity 0.9s cubic-bezier(0.9,0.1,0.9,0.1);
 }
 
 .disabled-board {

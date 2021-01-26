@@ -1,6 +1,5 @@
 import React from 'react';
 import '../styles/GameBoardDisplay.css';
-import { CellState } from '../logic/gameBoard';
 import { observer } from 'mobx-react-lite';
 import Player from '../logic/player';
 import BoardCell from './BoardCell';

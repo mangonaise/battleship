@@ -75,6 +75,19 @@ class GameBoard {
     this._arePositionsLocked = true;
   }
 
+  public findFreeCells() {
+    const freeCells: [number, number][] = [];
+    for (let row = 0; row < 10; row++) {
+      for (let column = 0; column < 10; column++) {
+        const cellState = this.cells[row][column];
+        if (cellState === CellState.empty || cellState === CellState.shipIntact) {
+          freeCells.push([row, column]);
+        }
+      }
+    }
+    return freeCells;
+  }
+
   public receiveAttack(position: [number, number]) {
     const attackedShip = this.findShipAt(position);
     this.setStateOfCells([position], attackedShip ? CellState.shipHit : CellState.missed);

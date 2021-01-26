@@ -15,34 +15,11 @@
   grid-template-columns: var(--board-dimension);
   border: solid 2px gray;
   margin: 20px 50px;
+  box-shadow: rgb(219, 219, 219) 0px 0px 0px 2px inset;
+  transition: opacity 1s cubic-bezier(0.9,0.1,0.9,0.1);
 }
 
-.board-cell {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: solid 1px rgb(219, 219, 219);
-}
-
-.board-cell:hover {
-  border: solid 2px rgb(63, 63, 63);
-}
-
-.cell-revealed {
-  background-color: rgb(184, 212, 177);
-  border-color: rgb(123, 163, 112);
-}
-
-.cell-missed {
-  background-color:  rgb(219, 219, 219);
-}
-
-.cell-hit {
-  background-color: rgb(230, 228, 121);
-  border-color: rgb(175, 174, 96);
-}
-
-.cell-sunk {
-  background-color: rgb(179, 73, 73);
-  border-color: rgb(126, 47, 47);
+.disabled-board {
+  opacity: 0.45;
+  pointer-events: none;
 }

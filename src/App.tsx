@@ -5,16 +5,21 @@ import './styles/App.css';
 
 const human = new Player('human');
 human.placeRandomShips();
+human.board.lockShipsInPlace();
 const cpu = new Player('cpu');
+cpu.autoAttackDelay = 2;
+
+human.opponent = cpu;
+cpu.opponent = human;
+
 
 const App = () => {
   return (
     <div id="board-container">
-      <GameBoardDisplay player={human}/>
-      <GameBoardDisplay player={cpu} />
+      <GameBoardDisplay owner={human}/>
+      <GameBoardDisplay owner={cpu} />
     </div>
   );
 }
-
 
 export default App;

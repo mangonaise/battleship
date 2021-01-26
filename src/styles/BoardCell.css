@@ -1,0 +1,78 @@
+.board-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border: solid 1px rgb(219, 219, 219);
+}
+
+.board-cell:hover {
+  border: solid 2px rgb(63, 63, 63);
+}
+
+.cell-revealed {
+  background-color: rgb(215, 235, 211);
+  border-color: rgb(151, 190, 140);
+}
+
+.cell-missed {
+  animation: miss 0.2s forwards linear;
+}
+.cell-missed::after {
+  content: "·";
+}
+
+.cell-hit {
+  animation: hit 0.2s forwards linear;
+  border-color: rgb(201, 163, 93);
+}
+
+.cell-sunk {
+  animation: sink 0.2s forwards cubic-bezier(.78,.11,.81,.56);
+  font-size: 30px;
+  padding-bottom: 3px;
+  
+}
+.cell-sunk::after {
+  content: "✕";
+}
+
+.cell-uninteractable {
+  pointer-events: none;
+}
+
+.cell-uninteractable:hover {
+  border: solid 1px rgb(219, 219, 219);
+}
+
+@keyframes hit {
+  from {
+    background-color: rgb(158, 112, 26);
+  } 
+  to {
+    background-color: rgb(241, 193, 102);
+  }
+}
+
+@keyframes sink {
+  from {
+    color: transparent;
+    background-color: rgb(245, 51, 51);
+  }
+  to {
+    color: rgb(126, 47, 47);
+    background-color: rgb(179, 73, 73);
+    border-color: rgb(126, 47, 47);
+  }
+}
+
+@keyframes miss {
+  from {
+    color: transparent;
+    background-color: rgb(65, 65, 65);
+  }
+  to {
+    color: rgb(216, 216, 216);
+    background-color:  rgb(240, 240, 240);
+  }
+}

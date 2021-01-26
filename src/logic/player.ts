@@ -52,6 +52,7 @@ class Player {
         this.opponent.autoAttack();
       }
     }
+    // Successful attack nets another turn.
     else {
       if (this.type === 'cpu' && this.autoAttackDelay > 0) {
         this.autoAttack();
@@ -64,6 +65,7 @@ class Player {
     setTimeout(() => this.makeSmartMove(), this.autoAttackDelay * 1000);
   }
 
+  // TODO: Try refactoring this into a non-monster function?
   public makeSmartMove() {
     if (!this.opponent) return;
     const opponentBoard = this.opponent.board;
@@ -95,10 +97,11 @@ class Player {
         .map(pos => {
           const adjacentStates = opponentBoard.getAdjacentCellStates(pos);
           const adjacentIndex = adjacentStates.indexOf(CellState.shipHit);
-          if (adjacentIndex === 0) return pos[0] + 1 >= 0 ? [pos[0] + 1, pos[1]] as [number, number] : undefined;
-          if (adjacentIndex === 1) return pos[1] + 1 >= 0 ? [pos[0], pos[1] + 1] as [number, number] : undefined;
-          if (adjacentIndex === 2) return pos[1] - 1 <= 9 ? [pos[0], pos[1] - 1] as [number, number] : undefined;
-          if (adjacentIndex === 3) return pos[0] - 1 <= 9 ? [pos[0] - 1, pos[1]] as [number, number] : undefined;
+          // Finds the position opposite the hit cell.
+          if (adjacentIndex === 0) return pos[0] + 1 <= 9 ? [pos[0] + 1, pos[1]] as [number, number] : undefined;
+          if (adjacentIndex === 1) return pos[1] + 1 <= 9 ? [pos[0], pos[1] + 1] as [number, number] : undefined;
+          if (adjacentIndex === 2) return pos[1] - 1 >= 0 ? [pos[0], pos[1] - 1] as [number, number] : undefined;
+          if (adjacentIndex === 3) return pos[0] - 1 >= 0 ? [pos[0] - 1, pos[1]] as [number, number] : undefined;
           return undefined;
         })
         .filter((pos): pos is [number, number] => pos !== undefined)

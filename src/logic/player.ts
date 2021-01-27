@@ -23,7 +23,8 @@ class Player {
     }
   }
 
-  public placeRandomShips() {
+  public placeRandomShips(clearFirst: boolean = false) {
+    if (clearFirst) this.board.clear();
     for (let shipsToPlace = 1; shipsToPlace <= 4; shipsToPlace++) {
       repeat(shipsToPlace, () => {
         const shipSize = 5 - shipsToPlace;

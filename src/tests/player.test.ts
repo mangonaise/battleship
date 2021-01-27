@@ -124,5 +124,5 @@ describe('Player', () => {
     expect(human.board.haveAllShipsSunk).toBe(false);
     cpu.makeSmartMove();
     expect(human.board.haveAllShipsSunk).toBe(true);    
-  })
+  });
 })

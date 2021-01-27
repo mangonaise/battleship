@@ -45,6 +45,14 @@ class GameBoard {
     )
   }
 
+  public clear() {
+    this.ships = [];
+    this.nextShipPlacement = null;
+    this.haveAllShipsSunk = false;
+    this.sunkShipsInfo = {};
+    this.cells = this.initializeBoard();
+  }
+
   public prepareToPlaceShip(shipPlacement: ShipPlacement) {
     if (!shipPlacement) throw new Error("No ship placement provided.");
 
@@ -256,6 +264,10 @@ class GameBoard {
   }
 
   public get arePositionsLocked() { return this._arePositionsLocked; }
+
+  public numberOfShipsWithSize(size: number) { 
+    return this.ships.filter(ship => ship.size === size).length;
+  }
 }
 
 export { CellState, GameBoard };

@@ -1,3 +1,8 @@
+:root {
+  --user-cell-color: rgb(211, 232, 235);
+  --user-cell-border-color: rgb(140, 170, 190);
+}
+
 .board-cell {
   display: flex;
   justify-content: center;
@@ -7,13 +12,13 @@
   color: transparent;
 }
 
-.board-cell:hover {
+.cell-hoverable:hover {
   border: solid 2px rgb(63, 63, 63);
 }
 
-.cell-revealed {
-  background-color: rgb(211, 232, 235);
-  border-color: rgb(140, 170, 190);
+.cell-user {
+  background-color: var(--user-cell-color);
+  border-color: var(--user-cell-border-color);
 }
 
 .cell-known-empty {

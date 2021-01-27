@@ -295,5 +295,27 @@ describe('Game board', () => {
     board.receiveAttack([0, 6]);
     expect(board.sunkShipsInfo[1]).toEqual({ quantity: 3, sunk: 2 });
     expect(board.sunkShipsInfo[3]).toEqual({ quantity: 2, sunk: 1 });
+  });
+
+  test('can query the number of ships with a specified length', () => {
+    board.prepareToPlaceShip({ ship: new Ship(1), direction: 'horizontal', row: 0, column: 0});
+    board.placeShip();
+
+    board.prepareToPlaceShip({ ship: new Ship(1), direction: 'horizontal', row: 2, column: 0});
+    board.placeShip();
+
+    board.prepareToPlaceShip({ ship: new Ship(3), direction: 'horizontal', row: 4, column: 0});
+    board.placeShip();
+
+    expect(board.numberOfShipsWithSize(1)).toEqual(2);
+    expect(board.numberOfShipsWithSize(3)).toEqual(1);
+  })
+
+  test('clear board function works', () => {
+    board.prepareToPlaceShip({ ship: new Ship(1), direction: 'horizontal', row: 0, column: 0});
+    board.placeShip();
+    expect(board.ships.length).toBe(1);
+    board.clear();
+    expect(board.ships.length).toBe(0);
   })
 });

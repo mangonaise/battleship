@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react-lite';
-import React from 'react';
-import { CellState } from '../logic/gameBoard';
+import React, { useEffect, useRef } from 'react';
+import { CellState, ShipPlacement } from '../logic/gameBoard';
 import Player from '../logic/player';
+import Ship from '../logic/ship';
 import '../styles/BoardCell.css';
 
 interface Props {
@@ -11,20 +12,37 @@ interface Props {
 }
 
 const BoardCell: React.FC<Props> = ({ cell, owner, index }) => {
+  const cellRef: any = useRef(null);
   const board = owner.board;
 
-  function handleClickCell(index: number) {
+  useEffect(() => {
+    if (cellRef.current) {
+      cellRef.current.addEventListener('shipDrop', handleShipDrop);
+    }
+  }, []);
+
+  function getCellPositionFromIndex() {
     const row = Math.floor(index / 10);
     const column = index % 10;
-    const cellState = board.cells[row][column];
+    return [row, column];
+  }
+
+  function handleShipDrop(event: CustomEvent) {
+    const [row, column] = getCellPositionFromIndex();
+    const ship = new Ship(event.detail.size);
+    const direction = event.detail.direction;
+    const placement: ShipPlacement = { ship, direction, row, column };
+    board.prepareToPlaceShip(placement);
+    if (board.isNextShipPlacementValid) {
+      board.placeShip();
+    }
+  }
+
+  function handleClickCell() {
+    const [row, column] = getCellPositionFromIndex();
 
     if (board.arePositionsLocked) {
       owner.opponent?.attack([row, column]);
-    }
-    else {
-      if (cellState === CellState.shipIntact) {
-        board.rotateShipAt([row, column]);
-      }
     }
   }
 
@@ -35,7 +53,7 @@ const BoardCell: React.FC<Props> = ({ cell, owner, index }) => {
   
     if (owner.type === 'human') {
       if (cellState === CellState.shipIntact) {
-        style += ' cell-revealed';
+        style += ' cell-user';
       }
       if (board.arePositionsLocked) {
         style += ' cell-uninteractable';
@@ -51,14 +69,17 @@ const BoardCell: React.FC<Props> = ({ cell, owner, index }) => {
     else if (index === 9) style += ' cell-top-right';
     else if (index === 90) style += ' cell-bottom-left';
     else if (index === 99) style += ' cell-bottom-right';
+
+    if (owner.type === 'cpu') style += ' cell-hoverable';
     
     return style;
   }
 
   return (
     <div
+      ref={cellRef}
       className={`board-cell ${setCellStyle(cell)}`}
-      onClick={() => handleClickCell(index)}
+      onClick={handleClickCell}
     />
   )
 }

@@ -1,13 +1,13 @@
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 import GameBoardDisplay from './components/GameBoardDisplay';
+import ShipPlacementMenu from './components/ShipPlacementMenu';
 import Player from './logic/player';
 import './styles/App.css';
 
 const human = new Player('human');
-human.placeRandomShips();
-human.board.lockShipsInPlace();
 const cpu = new Player('cpu');
-cpu.autoAttackDelay = 1.9;
+cpu.autoAttackDelay = 1.4;
 
 human.opponent = cpu;
 cpu.opponent = human;
@@ -18,11 +18,12 @@ const App = () => {
     <div id="app-container">
       <div id="boards-container">
         <GameBoardDisplay owner={human}/>
-        <GameBoardDisplay owner={cpu} />
+        {!human.board.arePositionsLocked && <ShipPlacementMenu user={human}/>}
+        {human.board.arePositionsLocked && <GameBoardDisplay owner={cpu}/>}
       </div>
     </div>
     
   );
 }
 
-export default App;
+export default observer(App);

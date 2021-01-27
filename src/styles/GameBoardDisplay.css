@@ -1,5 +1,5 @@
 :root {
-  --board-dimension: repeat(10, 35px);
+  --cell-size: 35px;
 }
 
 .board-owner-label {
@@ -15,8 +15,8 @@
 
 .board-grid {
   display: grid;
-  grid-template-rows: var(--board-dimension);
-  grid-template-columns: var(--board-dimension);
+  grid-template-rows: repeat(10, var(--cell-size));
+  grid-template-columns: repeat(10, var(--cell-size));
   border: solid 2px gray;
   border-radius: 8px;
   margin: 20px 30px;

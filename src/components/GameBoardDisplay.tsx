@@ -11,7 +11,7 @@ const GameBoardDisplay: React.FC<{ owner: Player }> = ({ owner }) => {
       <div className="board-owner-label">
         {owner.type === 'human' ? 'Your board' : `Opponent's board`}
       </div>
-      <div className={`board-grid ${owner.isPlayerTurn ? 'disabled-board' : ''}`}>
+      <div className={`board-grid ${owner.isPlayerTurn && owner.board.arePositionsLocked ? 'disabled-board' : ''}`}>
         {owner.board.cells.flat().map((cell, index) => (
           <BoardCell key={index} cell={cell} owner={owner} index={index}/>
         ))}

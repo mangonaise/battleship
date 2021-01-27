@@ -19,12 +19,17 @@ export type ShipPlacement = {
   column: number
 } | null
 
+export type SunkShipsInfo = {
+  [key: number]: { quantity: number, sunk: number }
+}
+
 class GameBoard {
   public cells: CellField;
   public nextShipPlacement: ShipPlacement = null;
   public isNextShipPlacementValid = false;
   public haveAllShipsSunk = false;
   public ships: Ship[] = [];
+  public sunkShipsInfo: SunkShipsInfo = {}
   private _arePositionsLocked = false;
 
   constructor() {
@@ -44,10 +49,8 @@ class GameBoard {
     if (!shipPlacement) throw new Error("No ship placement provided.");
 
     const { ship, direction, row, column } = shipPlacement;
-
     const startPoint = direction === 'horizontal' ? column : row;
     const isShipWithinBoardEdges = row >= 0 && column >= 0 && startPoint + ship.size <= 10;
-
     this.isNextShipPlacementValid = isShipWithinBoardEdges && !this.wouldShipsBeInContact(shipPlacement);
     this.nextShipPlacement = shipPlacement;
   }
@@ -60,6 +63,8 @@ class GameBoard {
       return;
     }
 
+    const size = this.nextShipPlacement.ship.size;
+
     const newCellPositions = this.predictCellsInShip(this.nextShipPlacement);
     const shipToPlace = this.nextShipPlacement.ship;
     shipToPlace.cellPositions = newCellPositions;
@@ -70,6 +75,11 @@ class GameBoard {
     this.ships.push(shipToPlace);
     this.isNextShipPlacementValid = false;
     this.nextShipPlacement = null;
+
+    this.sunkShipsInfo[size] = {
+      quantity: this.sunkShipsInfo[size] ? this.sunkShipsInfo[size].quantity + 1 : 1,
+      sunk: 0
+    };
   }
 
   public lockShipsInPlace() {
@@ -105,20 +115,26 @@ class GameBoard {
       const attackedIndex = attackedShip.cellPositions.indexOf(attackedCell);
       attackedShip.hit(attackedIndex);
       if (attackedShip.isSunk) {
-        attackedShip.cellPositions.forEach(sunkPos => {
-          this.cells[sunkPos[0]][sunkPos[1]] = CellState.shipSunk;
-          let knownCellPositions = 
-            [...this.getAdjacentCellPositions(sunkPos), ...this.getCornerCellPositions(sunkPos)]
-            .filter((pos): pos is [number, number] => pos !== undefined)
-            .filter(pos => {
-              let cellState = this.cells[pos[0]][pos[1]];
-              return cellState === CellState.empty;
-            });
-          this.setStateOfCells(knownCellPositions, CellState.knownEmpty);
-        });
+        this.handleSunkShip(attackedShip);
       }
       this.haveAllShipsSunk = this.ships.every(ship => ship.hits.every(hit => hit === 'hit'));
     }
+  }
+
+  private handleSunkShip(attackedShip: Ship) {
+    attackedShip.cellPositions.forEach(sunkPos => {
+      this.cells[sunkPos[0]][sunkPos[1]] = CellState.shipSunk;
+      let knownCellPositions = 
+        [...this.getAdjacentCellPositions(sunkPos), ...this.getCornerCellPositions(sunkPos)]
+          .filter((pos): pos is [number, number] => pos !== undefined)
+          .filter(pos => {
+            let cellState = this.cells[pos[0]][pos[1]];
+            return cellState === CellState.empty;
+          });
+      this.setStateOfCells(knownCellPositions, CellState.knownEmpty);
+    });
+
+    this.sunkShipsInfo[attackedShip.size].sunk += 1;
   }
 
   public rotateShipAt(position: [number, number]) {

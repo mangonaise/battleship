@@ -274,4 +274,26 @@ describe('Game board', () => {
     board.receiveAttack([1,2]);
     expect(board.haveAllShipsSunk).toBe(true);
   });
+
+  test('sinking ships correctly updates ship data', () => {
+    for (let i = 0; i < 3; i++) {
+      board.prepareToPlaceShip({ ship: new Ship(1), direction: 'horizontal', row: i*2, column: 0 });
+      board.placeShip();
+    }
+    for (let i = 0; i < 2; i++) {
+      board.prepareToPlaceShip({ ship: new Ship(3), direction: 'horizontal', row: i*2, column: 4 });
+      board.placeShip();
+    }
+    
+    expect(board.sunkShipsInfo[1]).toEqual({ quantity: 3, sunk: 0 });
+    expect(board.sunkShipsInfo[3]).toEqual({ quantity: 2, sunk: 0 });
+
+    board.receiveAttack([0, 0]);
+    board.receiveAttack([2, 0]);
+    board.receiveAttack([0, 4]);
+    board.receiveAttack([0, 5]);
+    board.receiveAttack([0, 6]);
+    expect(board.sunkShipsInfo[1]).toEqual({ quantity: 3, sunk: 2 });
+    expect(board.sunkShipsInfo[3]).toEqual({ quantity: 2, sunk: 1 });
+  })
 });

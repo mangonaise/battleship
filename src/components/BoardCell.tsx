@@ -1,9 +1,16 @@
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { CellState } from '../logic/gameBoard';
 import Player from '../logic/player';
 import '../styles/BoardCell.css';
 
-const BoardCell: React.FC<{ cell: CellState, owner: Player, index: number }> = ({ cell, owner, index }) => {
+interface Props {
+  cell: CellState;
+  owner: Player;
+  index: number;
+}
+
+const BoardCell: React.FC<Props> = ({ cell, owner, index }) => {
   const board = owner.board;
 
   function handleClickCell(index: number) {
@@ -56,4 +63,4 @@ const BoardCell: React.FC<{ cell: CellState, owner: Player, index: number }> = (
   )
 }
 
-export default BoardCell;
+export default observer(BoardCell);

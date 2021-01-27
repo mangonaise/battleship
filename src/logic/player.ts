@@ -70,34 +70,39 @@ class Player {
     if (!this.opponent) return;
     const opponentBoard = this.opponent.board;
     const hitPositions = opponentBoard.findCellsWithState([CellState.shipHit]);
-    if (hitPositions.length > 0) {
-      if (hitPositions.length === 1) {
-        let adjacentPositions = 
-          opponentBoard.getAdjacentCellPositions(hitPositions[0])
-          .filter((pos): pos is [number, number] => pos !== undefined)
-          .filter(pos => opponentBoard.cells[pos[0]][pos[1]] !== CellState.missed)
-          .filter(pos => {
-            const cornerStates = opponentBoard.getCornerCellStates(pos);
-            return !cornerStates.some(state => state === CellState.shipHit || state === CellState.shipSunk);
-          });
-        adjacentPositions = shuffle(adjacentPositions);
-        this.attack(adjacentPositions[0]);
-        return;
-      }
 
-      let endPositions = hitPositions.filter(hitPos => {
+    if (hitPositions.length === 0) {
+      this.attackRandomCell();
+      return;
+    }
+
+    if (hitPositions.length === 1) {
+      let adjacentPositions = shuffle(
+        opponentBoard.getAdjacentCellPositions(hitPositions[0])
+        .filter((pos): pos is [number, number] => pos !== undefined)
+        .filter(pos => opponentBoard.cells[pos[0]][pos[1]] !== CellState.missed)
+        .filter(pos => {
+          const cornerStates = opponentBoard.getCornerCellStates(pos);
+          return !cornerStates.some(state => state === CellState.shipHit || state === CellState.shipSunk);
+        })
+      );
+      this.attack(adjacentPositions[0]);
+      return;
+    }
+
+    let endPositions = shuffle(
+      hitPositions.filter(hitPos => {
         const adjacentStates = opponentBoard.getAdjacentCellStates(hitPos);
         return adjacentStates.filter(state => state === CellState.shipHit).length === 1;
-      });
+      })
+    );
 
-      endPositions = shuffle(endPositions);
-
-      let extendedPositions: [number, number][] =
-        endPositions
-        .map(pos => {
+    let extendedPositions: [number, number][] = 
+      endPositions
+        .map(pos => { 
+          // Finds the position opposite the hit cell.
           const adjacentStates = opponentBoard.getAdjacentCellStates(pos);
           const adjacentIndex = adjacentStates.indexOf(CellState.shipHit);
-          // Finds the position opposite the hit cell.
           if (adjacentIndex === 0) return pos[0] + 1 <= 9 ? [pos[0] + 1, pos[1]] as [number, number] : undefined;
           if (adjacentIndex === 1) return pos[1] + 1 <= 9 ? [pos[0], pos[1] + 1] as [number, number] : undefined;
           if (adjacentIndex === 2) return pos[1] - 1 >= 0 ? [pos[0], pos[1] - 1] as [number, number] : undefined;
@@ -110,21 +115,17 @@ class Player {
           return cellState === CellState.empty || cellState === CellState.shipIntact;
         });
 
-      for (const unhitPos of extendedPositions) {
-        const surroundingStates = opponentBoard.getSurroundingCellStates(unhitPos);
-        const surroundingHitCells = surroundingStates.filter(state => state === CellState.shipHit || state === CellState.shipSunk);
+    for (const unhitPos of extendedPositions) {
+      const surroundingStates = opponentBoard.getSurroundingCellStates(unhitPos);
+      const surroundingHitCells = surroundingStates.filter(state => state === CellState.shipHit || state === CellState.shipSunk);
 
-        if (surroundingHitCells.length === 1) {
-          this.attack(unhitPos);
-          return unhitPos;
-        }
+      if (surroundingHitCells.length === 1) {
+        this.attack(unhitPos);
+        return;
       }
-
-      throw new Error("Logic error! Checked either end of hit cells and found no available space to attack.");
-
-    } else {
-      this.attackRandomCell();
     }
+
+    throw new Error("Logic error! Checked either end of hit cells and found no available space to attack.");
   }
 
   private attackRandomCell() {

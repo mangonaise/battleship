@@ -15,7 +15,7 @@ cpu.opponent = human;
 
 const App = () => {
   return (
-    <div id="board-container">
+    <div id="boards-container">
       <GameBoardDisplay owner={human}/>
       <GameBoardDisplay owner={cpu} />
     </div>

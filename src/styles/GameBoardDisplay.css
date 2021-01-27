@@ -2,6 +2,10 @@
   --board-dimension: repeat(10, 35px);
 }
 
+.board-owner-label {
+  font-weight: bold;
+}
+
 .board-display-container {
   display: flex;
   flex-direction: column;

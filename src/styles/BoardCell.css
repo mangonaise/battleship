@@ -12,13 +12,13 @@
 }
 
 .cell-revealed {
-  background-color: rgb(215, 235, 211);
-  border-color: rgb(151, 190, 140);
+  background-color: rgb(211, 232, 235);
+  border-color: rgb(140, 170, 190);
 }
 
 .cell-known-empty {
   transition: all 1s;
-  color: rgb(216, 216, 216);
+  color: rgb(207, 207, 207);
   background-color:  rgb(240, 240, 240);
 }
 
@@ -96,7 +96,7 @@
     background-color: rgb(102, 102, 102);
   }
   to {
-    color: rgb(216, 216, 216);
+    color: rgb(207, 207, 207);
     background-color:  rgb(240, 240, 240);
   }
 }

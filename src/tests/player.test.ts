@@ -71,6 +71,21 @@ describe('Player', () => {
     expect(cpu.isPlayerTurn).toBe(false);
   });
 
+  test('computer starts by hunting a random cell', () => {
+    const human = new Player('human');
+    const cpu = new Player('cpu');
+    human.opponent = cpu;
+    cpu.opponent = human;
+
+    cpu.makeSmartMove();
+
+    expect(cpu.opponent.board.cells.some(row => 
+      row.some(state => 
+        state === CellState.missed || state === CellState.shipHit || state === CellState.shipSunk
+      )
+    )).toBe(true);
+  })
+
   test('computer will check in a line if 3 cells surrounding a hit cell are missed', () => {
     const human = new Player('human');
     const cpu = new Player('cpu');
@@ -92,4 +107,22 @@ describe('Player', () => {
     expect(cpu.opponent.board.cells[3][5]).toBe(CellState.shipSunk);
     expect(human.board.ships[0].isSunk).toBe(true);
   });
+
+  test('computer will make right decision in the corner of the board', () => {
+    const human = new Player('human');
+    const cpu = new Player('cpu');
+    human.opponent = cpu;
+    cpu.opponent = human;
+
+    human.board.prepareToPlaceShip({ ship: new Ship(4), direction: 'vertical', row: 6, column: 9 });
+    human.board.placeShip();
+
+    cpu.attack([9, 8]);
+    cpu.attack([9, 9]);
+    cpu.makeSmartMove();
+    cpu.makeSmartMove();
+    expect(human.board.haveAllShipsSunk).toBe(false);
+    cpu.makeSmartMove();
+    expect(human.board.haveAllShipsSunk).toBe(true);    
+  })
 })

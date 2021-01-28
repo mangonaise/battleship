@@ -1,0 +1,16 @@
+.footer {
+  position: fixed;
+  width: 100%;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+.footer > * {
+  margin: 0px 5px;
+}

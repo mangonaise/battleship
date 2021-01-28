@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import GameBoardDisplay from './components/GameBoardDisplay';
 import GameEndMessage from './components/GameEndMessage';
+import GithubFooter from './components/GithubFooter';
 import ShipPlacementMenu from './components/ShipPlacementMenu';
 import StatusText from './components/StatusText';
 import Player from './logic/player';
@@ -25,6 +26,7 @@ const App = () => {
         <GameEndMessage players={[human, cpu]}/>
       </div>
     </div>
+    <GithubFooter />
     </>
   );
 }

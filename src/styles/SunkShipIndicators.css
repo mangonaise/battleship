@@ -17,6 +17,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-end;
+  padding-bottom: 40px;
 }
 
 .sunk-indicator {

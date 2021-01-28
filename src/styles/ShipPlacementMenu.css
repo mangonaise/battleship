@@ -87,11 +87,11 @@
 }
 
 .active-direction-button {
-  background-color: rgb(191, 235, 191);
-  color: rgb(91, 129, 91);
+  background-color: rgb(191, 235, 233);
+  color: rgb(91, 121, 129);
   cursor: default;
   opacity: 1;
-  border: solid 1px rgb(152, 192, 152)
+  border: solid 1px rgb(152, 186, 192)
 }
 
 #start-button {

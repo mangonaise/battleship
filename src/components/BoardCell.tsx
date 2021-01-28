@@ -4,6 +4,7 @@ import { CellState, ShipPlacement } from '../logic/gameBoard';
 import Player from '../logic/player';
 import Ship from '../logic/ship';
 import '../styles/BoardCell.css';
+import { ShipDragEvent } from './DraggableShip';
 
 interface Props {
   cell: CellState;
@@ -17,8 +18,9 @@ const BoardCell: React.FC<Props> = ({ cell, owner, index }) => {
 
   useEffect(() => {
     if (cellRef.current) {
-      cellRef.current.addEventListener('shipDrop', handleShipDrop);
+      cellRef.current.addEventListener('shipDrag', handleShipDrag);
     }
+    return () => cellRef.current.removeEventListener('shipDrag', handleShipDrag);
   }, []);
 
   function getCellPositionFromIndex() {
@@ -27,14 +29,19 @@ const BoardCell: React.FC<Props> = ({ cell, owner, index }) => {
     return [row, column];
   }
 
-  function handleShipDrop(event: CustomEvent) {
+  function handleShipDrag(event: ShipDragEvent) {
     const [row, column] = getCellPositionFromIndex();
-    const ship = new Ship(event.detail.size);
-    const direction = event.detail.direction;
+    const { size, direction, dragStop, setIsDropPositionValid } = event.detail;
+    const ship = new Ship(size);
     const placement: ShipPlacement = { ship, direction, row, column };
     board.prepareToPlaceShip(placement);
     if (board.isNextShipPlacementValid) {
-      board.placeShip();
+      setIsDropPositionValid(true);
+      if (dragStop) {
+        board.placeShip();
+      }
+    } else {
+      setIsDropPositionValid(false);
     }
   }
 

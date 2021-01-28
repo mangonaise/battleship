@@ -10,23 +10,54 @@ interface Props {
   direction: 'horizontal' | 'vertical'
 }
 
+export type ShipDragEvent = CustomEvent<{
+  size: number,
+  direction: 'horizontal' | 'vertical',
+  dragStop: boolean,
+  setIsDropPositionValid: React.Dispatch<React.SetStateAction<boolean>>
+}>
+
 const DraggableShip: React.FC<Props> = ({ size, display, direction }) => {
   // needed for react strict mode
   const nodeRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
+  
   const [isDragging, setIsDragging] = useState(false);
+  const [isDropPositionValid, setIsDropPositionValid] = useState(false);
 
-  function handleDragStop(e: any) {
-    const cell = document.elementsFromPoint(e.x, e.y).find(el => el.classList.contains('board-cell'));
+  function handleDragStart() {
+    setZIndex(1);
+    setIsDragging(true);
+  }
+
+  function handleDragMove(e: MouseEvent) {
+    const cell = findCellAtPoint(e.x, e.y);
     if (cell) {
-      cell.dispatchEvent(new CustomEvent('shipDrop', { 'detail': { size, direction } }));
+      cell.dispatchEvent(createDragEvent(false));
+    } else {
+      setIsDropPositionValid(false);
+    }
+  }
+
+  function handleDragStop(e: MouseEvent) {
+    const cell = findCellAtPoint(e.x, e.y);
+    if (cell) {
+      cell.dispatchEvent(createDragEvent(true));
     }
     setZIndex(0);
     setIsDragging(false);
   }
 
-  function handleDragStart() {
-    setZIndex(1);
-    setIsDragging(true);
+  function findCellAtPoint(x: number, y: number) {
+    return document.elementsFromPoint(x, y).find(el => el.classList.contains('board-cell'));
+  }
+
+  function createDragEvent(dragStop: boolean): ShipDragEvent {
+    return new CustomEvent('shipDrag', { 'detail': {
+      size,
+      direction,
+      dragStop,
+      setIsDropPositionValid
+    }});
   }
 
   function setZIndex(value: number) {
@@ -43,7 +74,8 @@ const DraggableShip: React.FC<Props> = ({ size, display, direction }) => {
         position={{ x: 0, y: 0 }}
         scale={1}
         onStart={handleDragStart}
-        onStop={handleDragStop}>
+        onDrag={e => handleDragMove(e as MouseEvent)}
+        onStop={e => handleDragStop(e as MouseEvent)}>
         <div
           ref={nodeRef}
           className="draggable-ship"
@@ -55,7 +87,11 @@ const DraggableShip: React.FC<Props> = ({ size, display, direction }) => {
           {Array.from({ length: size }).map((_, index) => (
             <span
               key={index}
-              className={`ship-placer-cell ${index === 0 ? 'draggable-cell' : ''}`}
+              className={
+                `ship-placer-cell 
+                ${index === 0 ? 'draggable-cell' : ''} 
+                ${isDragging ? (isDropPositionValid ? 'dragging-valid' : 'dragging-invalid') : ''}`
+              }
               style={calculateBorderStyles(size, index)}
               >
               {index === 0 && <FontAwesomeIcon icon={faArrowsAlt} />}

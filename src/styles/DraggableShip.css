@@ -24,3 +24,15 @@
   cursor: move;
   pointer-events: auto;
 }
+
+.dragging-valid {
+  background-color: rgb(195, 224, 175);
+  border: solid 1px  rgb(155, 182, 138);
+  color: rgb(137, 161, 121);
+}
+
+.dragging-invalid {
+  background-color: rgb(238, 217, 217);
+  border: solid 1px rgb(197, 167, 167);
+  color: rgb(165, 125, 125);
+}

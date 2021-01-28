@@ -319,7 +319,7 @@ describe('Game board', () => {
     expect(board.ships.length).toBe(0);
   });
 
-  test.only('can remove a ship after it is placed', () => {
+  test('can remove a ship after it is placed', () => {
     board.prepareToPlaceShip({ ship: new Ship(2), direction: 'horizontal', row: 0, column: 0});
     board.placeShip();
     expect(board.ships.length).toBe(1);

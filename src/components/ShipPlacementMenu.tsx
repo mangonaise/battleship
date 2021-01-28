@@ -1,10 +1,11 @@
-import { faArrowsAltH, faArrowsAltV, faDice, faPlay, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
+import { faArrowsAlt, faArrowsAltH, faArrowsAltV, faDice, faPlay, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
 import Player from '../logic/player';
 import '../styles/ShipPlacementMenu.css';
 import DraggableShip from './DraggableShip';
+import GameRules from './GameRules';
 
 const ShipPlacementMenu: React.FC<{ user: Player }> = ({ user }) => {
   const [direction, setDirection] = useState<'horizontal' | 'vertical'>('horizontal');
@@ -21,7 +22,11 @@ const ShipPlacementMenu: React.FC<{ user: Player }> = ({ user }) => {
 
       {user.board.ships.length < 10 ?
         <div>
-          <div id="manual-placement-text">Drag & drop</div>
+          <div id="manual-placement-text">
+            Drag & drop using the
+            <FontAwesomeIcon style={{color: 'gray', padding: '0 4px'}} icon={faArrowsAlt} />
+            handles.
+          </div>
           <div className="direction-toggle-container">
             <button
               onClick={() => setDirection('horizontal')}
@@ -41,7 +46,8 @@ const ShipPlacementMenu: React.FC<{ user: Player }> = ({ user }) => {
           <h3 style={{ marginTop: '10px' }}>Good to go!</h3>
           <button onClick={() => user.board.lockShipsInPlace()} id="start-button" className="placement-option-button">
             <FontAwesomeIcon className="placement-option-icon" icon={faPlay} /> Start game
-        </button>
+          </button>
+          <GameRules />
         </>
       }
 

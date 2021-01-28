@@ -1,0 +1,34 @@
+#game-rules-container {
+  animation: appear 0.8s cubic-bezier(.75,.32,.68,.8) forwards;
+}
+
+@keyframes appear {
+  from { opacity: 0; } to { opacity: 1; }
+}
+
+#game-rules-text {
+  color: rgb(107, 107, 107);
+  font-size: 14px;
+  font-style: italic;
+}
+
+#cell-preview-container > div {
+  margin: 15px 0;
+  display: flex;
+  align-items: center;
+}
+
+.cell-preview-label {
+  margin-left: 15px;
+  font-size: 14px;
+  color: rgb(107, 107, 107);
+}
+
+.rules-cell-preview {
+  box-sizing: border-box;
+  width: 25px;
+  height: 25px;
+  animation-duration: 0s;
+  font-size: 20px;
+  padding-top: 2px;
+}

@@ -11,7 +11,7 @@ const ShipPlacementMenu: React.FC<{ user: Player }> = ({ user }) => {
 
   return (
     <div id="ship-placer-container">
-      <h3>Place your ships.</h3>
+      <h3>Place your ships to get started.</h3>
       <button onClick={() => user.board.clear()} className="placement-option-button">
         <FontAwesomeIcon className="placement-option-icon" icon={faSyncAlt} /> Clear board
       </button>

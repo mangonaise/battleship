@@ -1,0 +1,41 @@
+#end-message-container {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 12px;
+  padding: 20px;
+  width: 300px;
+  border: solid 2px rgb(207, 207, 207);
+  background-color: rgb(248, 248, 248);
+  color: rgb(105, 105, 105);
+}
+
+#end-message-container h3, p {
+  margin: 0;
+  text-align: center;
+}
+
+#end-message-container h3 {
+  color: rgb(70, 70, 70);
+}
+
+#play-again-button {
+  margin-top: 20px;
+  width: fit-content;
+  padding: 8px 15px;
+  border: none;
+  color:rgb(66, 77, 66);
+  background-color: rgb(205, 226, 205);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 17px;
+}
+
+#play-again-button:hover {
+  background-color: rgb(179, 206, 179);
+}
+
+#play-again-button:focus {
+  outline: none;
+}

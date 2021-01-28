@@ -143,6 +143,7 @@ describe('Player', () => {
     expect(cpu.isPlayerTurn).toBe(true);
     expect(cpu.hasExtraTurn).toBe(true);
     cpu.attack([9,9]);
+    expect(cpu.isPlayerTurn).toBe(false);
     expect(cpu.hasExtraTurn).toBe(false);
   })
 })

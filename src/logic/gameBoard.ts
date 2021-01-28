@@ -72,7 +72,6 @@ class GameBoard {
     }
 
     const size = this.nextShipPlacement.ship.size;
-
     const newCellPositions = this.predictCellsInShip(this.nextShipPlacement);
     const shipToPlace = this.nextShipPlacement.ship;
     shipToPlace.cellPositions = newCellPositions;
@@ -165,7 +164,6 @@ class GameBoard {
     this.setStateOfCells(cellsBeforeRotation, CellState.empty);
 
     const newDirection = shipToRotate.direction === 'horizontal' ? 'vertical' : 'horizontal';
-
     const newShipPlacement: ShipPlacement = { 
       ship: shipToRotate, 
       direction: newDirection,
@@ -191,7 +189,6 @@ class GameBoard {
 
   private wouldShipsBeInContact(proposedPlacement: ShipPlacement) {
     const proposedCells = this.predictCellsInShip(proposedPlacement);
-
     for (const cell of proposedCells) {
       const surroundingCellStates = this.getSurroundingCellStates(cell).filter(state => state !== undefined);
       const isContact = !surroundingCellStates.every(state => state === CellState.empty);

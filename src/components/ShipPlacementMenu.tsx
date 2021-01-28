@@ -18,6 +18,7 @@ const ShipPlacementMenu: React.FC<{ user: Player }> = ({ user }) => {
       <button onClick={() => user.placeRandomShips(true)} className="placement-option-button">
         <FontAwesomeIcon className="placement-option-icon" icon={faDice} /> Place randomly
       </button>
+      
       {user.board.ships.length < 10 ? 
       <div>
         <div id="manual-placement-text">Drag & drop</div>

@@ -69,7 +69,6 @@ class Player {
     setTimeout(() => this.makeSmartMove(), this.autoAttackDelay * 1000);
   }
 
-  // TODO: Try refactoring this into a non-monster function?
   public makeSmartMove() {
     if (!this.opponent) return;
     const opponentBoard = this.opponent.board;

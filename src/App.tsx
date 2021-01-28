@@ -17,16 +17,16 @@ cpu.opponent = human;
 const App = () => {
   return (
     <>
-    <StatusText user={human}/>
-    <div id="app-container">
-      <div id="game-container">
-        <GameBoardDisplay owner={human}/>
-        {!human.board.arePositionsLocked && <ShipPlacementMenu user={human}/>}
-        {human.board.arePositionsLocked && <GameBoardDisplay owner={cpu}/>}
-        <GameEndMessage players={[human, cpu]}/>
+      <StatusText user={human} />
+      <div id="app-container">
+        <div id="game-container">
+          <GameBoardDisplay owner={human} />
+          {!human.board.arePositionsLocked && <ShipPlacementMenu user={human} />}
+          {human.board.arePositionsLocked && <GameBoardDisplay owner={cpu} />}
+          <GameEndMessage players={[human, cpu]} />
+        </div>
       </div>
-    </div>
-    <GithubFooter />
+      <GithubFooter />
     </>
   );
 }

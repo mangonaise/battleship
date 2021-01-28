@@ -145,6 +145,15 @@ class GameBoard {
     this.sunkShipsInfo[attackedShip.size].sunk += 1;
   }
 
+  public removeShipAt(position: [number, number]) {
+    const shipToRemove = this.findShipAt(position);
+    if (!shipToRemove) return;
+
+    this.setStateOfCells(shipToRemove.cellPositions, CellState.empty);
+    this.ships = this.ships.filter(ship => ship !== shipToRemove);
+    this.sunkShipsInfo[shipToRemove.size].quantity -= 1;
+  }
+
   public rotateShipAt(position: [number, number]) {
     const shipToRotate = this.findShipAt(position); 
 

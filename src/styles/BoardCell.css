@@ -58,6 +58,10 @@
   border: solid 1px rgb(219, 219, 219);
 }
 
+.cell-removeable {
+  cursor: pointer;
+}
+
 .cell-top-left {
   border-top-left-radius: 6px;
 }

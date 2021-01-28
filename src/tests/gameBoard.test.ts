@@ -317,5 +317,15 @@ describe('Game board', () => {
     expect(board.ships.length).toBe(1);
     board.clear();
     expect(board.ships.length).toBe(0);
+  });
+
+  test.only('can remove a ship after it is placed', () => {
+    board.prepareToPlaceShip({ ship: new Ship(2), direction: 'horizontal', row: 0, column: 0});
+    board.placeShip();
+    expect(board.ships.length).toBe(1);
+
+    board.removeShipAt([0, 1]);
+    expect(board.ships.length).toBe(0);
+    expect(board.sunkShipsInfo[2].quantity).toBe(0);
   })
 });

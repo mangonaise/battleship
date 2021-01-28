@@ -43,6 +43,10 @@ const BoardCell: React.FC<Props> = ({ cell, owner, index }) => {
 
     if (board.arePositionsLocked) {
       owner.opponent?.attack([row, column]);
+    } else {
+      if (board.cells[row][column] === CellState.shipIntact) {
+        board.removeShipAt([row, column]);
+      }
     }
   }
 
@@ -54,6 +58,9 @@ const BoardCell: React.FC<Props> = ({ cell, owner, index }) => {
     if (owner.type === 'human') {
       if (cellState === CellState.shipIntact) {
         style += ' cell-user';
+        if (!board.arePositionsLocked) {
+          style += ' cell-removeable';
+        }
       }
       if (board.arePositionsLocked) {
         style += ' cell-uninteractable';
@@ -62,6 +69,10 @@ const BoardCell: React.FC<Props> = ({ cell, owner, index }) => {
     else {
       if (cellState !== CellState.empty && cellState !== CellState.shipIntact) {
         style += ' cell-uninteractable';
+      } else if (cellState === CellState.shipIntact) {
+        if (board.haveAllShipsSunk || owner.opponent?.board.haveAllShipsSunk) {
+          style += ' cell-user';
+        }
       }
     }
 

@@ -125,4 +125,24 @@ describe('Player', () => {
     cpu.makeSmartMove();
     expect(human.board.haveAllShipsSunk).toBe(true);    
   });
+
+  test('player gets extra turn after successful hit', () => {
+    const human = new Player('human');
+    const cpu = new Player('cpu');
+    cpu.board.clear();
+    human.opponent = cpu;
+    cpu.opponent = human;
+
+    human.board.prepareToPlaceShip({ ship: new Ship(4), direction: 'vertical', row: 0, column: 0 });
+    human.board.placeShip();
+
+    human.attack([5, 5]);
+
+    expect(cpu.isPlayerTurn).toBe(true);
+    cpu.attack([0, 0]);
+    expect(cpu.isPlayerTurn).toBe(true);
+    expect(cpu.hasExtraTurn).toBe(true);
+    cpu.attack([9,9]);
+    expect(cpu.hasExtraTurn).toBe(false);
+  })
 })

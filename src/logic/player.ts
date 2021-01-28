@@ -9,6 +9,7 @@ class Player {
   public type: 'human' | 'cpu';
   public opponent: Player | null = null;
   public isPlayerTurn = false;
+  public hasExtraTurn = false;
   public autoAttackDelay = 0;
 
   constructor(type: 'human' | 'cpu' = 'human') {
@@ -44,6 +45,7 @@ class Player {
 
   public attack(position: [number, number]) {
     if (!this.opponent) throw new Error("Can't attack as there is no opponent.");
+    if (this.board.haveAllShipsSunk || this.opponent.board.haveAllShipsSunk) return;
     this.opponent.board.receiveAttack(position);
 
     if (this.opponent.board.cells[position[0]][position[1]] === CellState.missed) {
@@ -52,9 +54,10 @@ class Player {
       if (this.opponent.type === 'cpu' && this.opponent.autoAttackDelay > 0) {
         this.opponent.autoAttack();
       }
+      this.hasExtraTurn = false;
     }
-    // Successful attack nets another turn.
     else {
+      this.hasExtraTurn = true;
       if (this.type === 'cpu' && this.autoAttackDelay > 0) {
         this.autoAttack();
       }

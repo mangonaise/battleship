@@ -17,10 +17,9 @@ const BoardCell: React.FC<Props> = ({ cell, owner, index }) => {
   const board = owner.board;
 
   useEffect(() => {
-    if (cellRef.current) {
-      cellRef.current.addEventListener('shipDrag', handleShipDrag);
-    }
-    return () => cellRef.current.removeEventListener('shipDrag', handleShipDrag);
+    const cellRefInit = cellRef.current;
+    cellRefInit.addEventListener('shipDrag', handleShipDrag);
+    return () => cellRefInit.removeEventListener('shipDrag', handleShipDrag);
   }, []);
 
   function getCellPositionFromIndex() {

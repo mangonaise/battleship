@@ -19,13 +19,15 @@
   #game-container {
     position: relative;
     bottom: 120px;
-    transform: scale(0.75);
+    transform: scale(0.7);
+    margin-top: 10px;
   }
 }
 
 #game-status {
   text-align: center;
   font-size: 22px;
+  font-weight: 500;
   margin: 0 auto;
   padding: 5px 30px;
   border-bottom: solid 2px rgb(207, 207, 207);

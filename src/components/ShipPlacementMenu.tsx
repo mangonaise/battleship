@@ -18,52 +18,44 @@ const ShipPlacementMenu: React.FC<{ user: Player }> = ({ user }) => {
       <button onClick={() => user.placeRandomShips(true)} className="placement-option-button">
         <FontAwesomeIcon className="placement-option-icon" icon={faDice} /> Place randomly
       </button>
-      
-      {user.board.ships.length < 10 ? 
-      <div>
-        <div id="manual-placement-text">Drag & drop</div>
-        <div className="direction-toggle-container">
-          <button
-            onClick={() => setDirection('horizontal')}
-            className={`placement-direction-button ${direction === 'horizontal' ? 'active-direction-button' : ''}`}>
-            <FontAwesomeIcon icon={faArrowsAltH} />
-          </button>
-          <button
-            className={`placement-direction-button ${direction === 'vertical' ? 'active-direction-button' : ''}`}
-            onClick={() => setDirection('vertical')}>
-            <FontAwesomeIcon icon={faArrowsAltV} />
-          </button>
-          <p>placing {direction}ly</p>
-        </div>
-      </div>
-      : 
-      <>
-        <h3 style={{marginTop: '10px'}}>Good to go!</h3>
-        <button onClick={() => user.board.lockShipsInPlace()} id="start-button" className="placement-option-button">
-          <FontAwesomeIcon className="placement-option-icon" icon={faPlay}/> Start game
-        </button>
-      </>}
 
-      <div>
-        <div className="draggable-ship-group">
-          <DraggableShip size={4} display={user.board.numberOfShipsWithSize(4) < 1} direction={direction} />
+      {user.board.ships.length < 10 ?
+        <div>
+          <div id="manual-placement-text">Drag & drop</div>
+          <div className="direction-toggle-container">
+            <button
+              onClick={() => setDirection('horizontal')}
+              className={`placement-direction-button ${direction === 'horizontal' ? 'active-direction-button' : ''}`}>
+              <FontAwesomeIcon icon={faArrowsAltH} />
+            </button>
+            <button
+              className={`placement-direction-button ${direction === 'vertical' ? 'active-direction-button' : ''}`}
+              onClick={() => setDirection('vertical')}>
+              <FontAwesomeIcon icon={faArrowsAltV} />
+            </button>
+            <p>placing {direction}ly</p>
+          </div>
         </div>
-        <div className="draggable-ship-group">
-          {Array.from({ length: 2 }).map((_, index) => (
-            <DraggableShip key={index} size={3} display={user.board.numberOfShipsWithSize(3) <= index} direction={direction} />
+        :
+        <>
+          <h3 style={{ marginTop: '10px' }}>Good to go!</h3>
+          <button onClick={() => user.board.lockShipsInPlace()} id="start-button" className="placement-option-button">
+            <FontAwesomeIcon className="placement-option-icon" icon={faPlay} /> Start game
+        </button>
+        </>
+      }
+
+      {Array.from({ length: 4 }).map((_, groupIndex) => (
+        <div key={groupIndex} className="draggable-ship-group">
+          {Array.from({ length: groupIndex + 1 }).map((_, shipIndex) => (
+            <DraggableShip
+              key={shipIndex}
+              size={4 - groupIndex}
+              display={user.board.numberOfShipsWithSize(4 - groupIndex) <= shipIndex}
+              direction={direction} />
           ))}
         </div>
-        <div className="draggable-ship-group">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <DraggableShip key={index} size={2} display={user.board.numberOfShipsWithSize(2) <= index} direction={direction} />
-          ))}
-        </div>
-        <div className="draggable-ship-group">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <DraggableShip key={index} size={1} display={user.board.numberOfShipsWithSize(1) <= index} direction={direction} />
-          ))}
-        </div>
-      </div>
+      ))}
     </div>
   )
 }

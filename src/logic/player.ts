@@ -83,7 +83,7 @@ class Player {
       let adjacentPositions = shuffle(
         opponentBoard.getAdjacentCellPositions(hitPositions[0])
         .filter((pos): pos is [number, number] => pos !== undefined)
-        .filter(pos => opponentBoard.cells[pos[0]][pos[1]] !== CellState.missed)
+        .filter(pos => ![CellState.missed, CellState.knownEmpty].includes(opponentBoard.cells[pos[0]][pos[1]]))
         .filter(pos => {
           const cornerStates = opponentBoard.getCornerCellStates(pos);
           return !cornerStates.some(state => state === CellState.shipHit || state === CellState.shipSunk);
@@ -134,18 +134,6 @@ class Player {
   private attackRandomCell() {
     const opponentBoard = this.opponent!.board;
     let freeCellPositions = opponentBoard.findCellsWithState([CellState.empty, CellState.shipIntact]);
-
-    freeCellPositions = freeCellPositions.filter(pos => {
-      const adjacentStates = opponentBoard.getAdjacentCellStates(pos);
-      if (adjacentStates.some(adj => adj === CellState.shipHit || adj === CellState.shipSunk)) {
-        return false;
-      }
-      const cornerStates = opponentBoard.getCornerCellStates(pos);
-      if (cornerStates.some(corner => corner === CellState.shipHit || corner === CellState.shipSunk)) {
-        return false;
-      }
-      return true;
-    })
 
     if (freeCellPositions.length === 0) {
       throw new Error('No more positions for CPU to check. The game should have ended by now.');

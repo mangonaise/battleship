@@ -20,13 +20,14 @@ export type ShipDragEvent = CustomEvent<{
 const DraggableShip: React.FC<Props> = ({ size, display, direction }) => {
   // needed for react strict mode
   const nodeRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
-  
+
   const [isDragging, setIsDragging] = useState(false);
   const [isDropPositionValid, setIsDropPositionValid] = useState(false);
 
   function handleDragStart() {
     setZIndex(1);
     setIsDragging(true);
+    setIsDropPositionValid(false);
   }
 
   function handleDragMove(e: MouseEvent) {
